@@ -34,13 +34,13 @@ def _getNumberOfPages(user):
     }
     r = requests.get(url=URL + urlencode(PARAMS))
     soup = BeautifulSoup(r.content, "lxml")
-    asd = soup.contents[0].contents[0].contents[0].contents[0]
-    if type(asd) == NavigableString:
+    pages = soup.contents[0].contents[0].contents[0].contents[0]
+    if type(pages) == NavigableString:
         return 0
-    if len(asd) == 5:
+    if len(pages) == 5:
         return 1
-    nr = len(asd.contents) - 3
-    return int(asd.contents[nr].contents[0])
+    nr = len(pages.contents) - 3
+    return int(pages.contents[nr].contents[0])
 
 
 def _getUser(user, page):
