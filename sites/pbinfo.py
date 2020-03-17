@@ -9,16 +9,17 @@ URL = "https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php"
 
 def getUser(user):
     PARAMS = {"user": user, "force_reload": "true"}
-    r = requests.get(url=URL, params=PARAMS) 
+    r = requests.get(url=URL, params=PARAMS)
     data = json.loads(r.content)
 
     result = []
     for i in data['content']:
+        data = datetime.datetime.strptime(i['data_upload'], "%Y-%m-%d")
         result.append({
             "problema": i['denumire'],
             "scor": int(i['scor']),
             "sursa": "pbinfo",
-            "data": int(time.mktime(datetime.datetime.strptime(i['data_upload'], "%Y-%m-%d").timetuple()))
+            "data": int(time.mktime(data.timetuple()))
         })
     return result
 

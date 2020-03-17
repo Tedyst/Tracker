@@ -25,7 +25,12 @@ def _formattedDate(data: str):
 
 
 def _getNumberOfPages(user):
-    PARAMS = {"only_table": "1", "first_entry": "0", "display_entries": 100, "user": user}
+    PARAMS = {
+        "only_table": "1",
+        "first_entry": "0",
+        "display_entries": 100,
+        "user": user
+    }
     r = requests.get(url=URL + urlencode(PARAMS))
     soup = BeautifulSoup(r.content, "lxml")
     asd = soup.contents[0].contents[0].contents[0].contents[0]
@@ -36,20 +41,29 @@ def _getNumberOfPages(user):
 
 
 def _getUser(user, page):
-    PARAMS = {"only_table": "1", "first_entry": page*100, "display_entries": 100, "user": user}
+    PARAMS = {
+        "only_table": "1",
+        "first_entry": page*100,
+        "display_entries": 100,
+        "user": user
+    }
     r = requests.get(url=URL + urlencode(PARAMS))
     soup = BeautifulSoup(r.content, "lxml")
     result = []
     for problema in soup.find('table').find('tbody'):
         nume = problema.contents[2].contents[0].contents[0]
+
         data = _formattedDate(problema.contents[5].contents[0])
-        data = int(time.mktime(datetime.datetime.strptime(data, "%d %m %y %H:%M:%S").timetuple()))
+        data = datetime.datetime.strptime(data, "%d %m %y %H:%M:%S")
+        data = int(time.mktime(data.timetuple()))
+
         scor = str(problema.contents[6].contents[0].contents[0].contents[0])
         if "Eroare" in scor:
             scor = -1
         else:
             scor = scor.replace("Evaluare completa: ", "")
             scor = int(scor.replace("puncte", ""))
+
         result.append({
             "problema": nume,
             "scor": scor,
