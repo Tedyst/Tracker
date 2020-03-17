@@ -29,6 +29,8 @@ def _getNumberOfPages(user):
     r = requests.get(url=URL + urlencode(PARAMS))
     soup = BeautifulSoup(r.content, "lxml")
     asd = soup.contents[0].contents[0].contents[0].contents[0]
+    if len(asd) == 5:
+        return 1
     nr = len(asd.contents) - 3
     return int(asd.contents[nr].contents[0])
 
@@ -70,5 +72,5 @@ def testUser(user):
 
 
 if __name__ == "__main__":
-    dicti = getUser("alexbolfa")
+    dicti = getUser("RedPipper")
     print(dicti)
