@@ -1,6 +1,7 @@
 
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString
 import datetime
 import time
 from urllib.parse import urlencode
@@ -34,6 +35,8 @@ def _getNumberOfPages(user):
     r = requests.get(url=URL + urlencode(PARAMS))
     soup = BeautifulSoup(r.content, "lxml")
     asd = soup.contents[0].contents[0].contents[0].contents[0]
+    if type(asd) == NavigableString:
+        return 0
     if len(asd) == 5:
         return 1
     nr = len(asd.contents) - 3
@@ -82,9 +85,11 @@ def getUser(user):
 
 
 def testUser(user):
+    if _getNumberOfPages(user) == 0:
+        return False
     return True
 
 
 if __name__ == "__main__":
-    dicti = getUser("RedPipper")
+    dicti = testUser("RedPipper")
     print(dicti)
