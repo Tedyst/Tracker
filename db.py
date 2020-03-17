@@ -1,4 +1,22 @@
 from sites.pbinfo import testUser, getUser
-import pandas
+import pandas as pd
+import importlib
+import os
 
-def 
+os.chdir("sites")
+
+def user_convert(user, site):
+    site = site + ".py"
+    print(site)
+    
+    mod = __import__(site)
+    if mod.testUser(user) is False:
+        return -1  #---> user not found
+    else:
+        problem_set = mod.getUser(user)
+        df = pd.DataFrame(problem_set)
+        df.to_csv(user+'_'+site+'.csv')
+
+
+
+user_convert("RedPipper", "pbinfo")

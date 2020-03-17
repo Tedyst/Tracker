@@ -16,7 +16,7 @@ def getUser(user):
     for i in data['content']:
         result.append({
             "problema": i['denumire'],
-            "scor": i['scor'],
+            "scor": int(i['scor']),
             "sursa": "pbinfo",
             "data": int(time.mktime(datetime.datetime.strptime(i['data_upload'], "%Y-%m-%d").timetuple()))
         })
