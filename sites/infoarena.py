@@ -88,8 +88,3 @@ def testUser(user):
     if _getNumberOfPages(user) == 0:
         return False
     return True
-
-
-if __name__ == "__main__":
-    dicti = testUser("RedPipper")
-    print(dicti)

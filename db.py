@@ -6,7 +6,7 @@ os.chdir("sites")
 
 
 def user_convert(user, site):
-    mod = importlib.import_module("sites." + site)
+    mod = importlib.import_module(site, ".sites." + site)
     if mod.testUser(user) is False:
         return -1  # user not found
     else:
@@ -16,5 +16,11 @@ def user_convert(user, site):
         df.to_csv(user+'_'+site+'.csv')
 
 
-if __name__ == "__main__":
-    user_convert("RedPipper", "infoarena")
+# Ne cam trebuie asta btw
+def query(user, site):
+    mod = importlib.import_module(site, ".sites." + site)
+    if mod.testUser(user) is False:
+        return None
+    else:
+        return mod.getUser(user)
+
