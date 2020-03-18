@@ -25,4 +25,8 @@ def api():
     data = query(user, site)
     if site == "all":
         data = sorted(data, key=operator.itemgetter("data"))
-    return json.dumps(data)
+    response = app.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
