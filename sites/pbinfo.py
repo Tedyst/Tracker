@@ -36,4 +36,3 @@ def testUser(user):
     if data['content'] is False:
         return False
     return True
-

@@ -23,4 +23,3 @@ def query(user, site):
         return None
     else:
         return mod.getUser(user)
-
