@@ -38,11 +38,5 @@ def search():
     if site not in SITES:
         return render_template('404.html')
     data = query(user, site)
-    if site == "all":
-        data = sorted(data, key=operator.itemgetter("data"))
-    return app.response_class(
-        response=json.dumps(data),
-        status=200,
-        mimetype='application/json'
-    )
-
+    data = sorted(data, key=operator.itemgetter("data"))
+    return render_template('search.html', problems=data)
