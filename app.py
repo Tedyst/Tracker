@@ -39,3 +39,6 @@ def search():
     data = query(user, site)
     data = sorted(data, key=operator.itemgetter("data"))
     return render_template('search.html', problems=data)
+
+
+app.run()
