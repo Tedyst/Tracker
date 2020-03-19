@@ -24,34 +24,35 @@ def _getUser(user, page):
     result= [] 
 
     for sumb in table.find_all('tr'):
-        link_problema = ""
-        nume_problema = ""
-        scor = ""
-        data = ""
-        #extrage numele si id-ul problemelor
-        link = sumb.contents[7].find_all('a')
-        for x in link:
-            link_problema=x['href']
-            nume_problema = x.get_text()
+        if sumb.contents[1].string!="#":
+            link_problema = ""
+            nume_problema = ""
+            scor = ""
+            data = ""
+            #extrage numele si id-ul problemelor
+            link = sumb.contents[7].find_all('a')
+            for x in link:
+                link_problema=x['href']
+                nume_problema = x.get_text()
 
-        #extrage scorul problemelor : Accepted/Pretests passed
-        # , compilation error, time limit, skipped sau none(pentru orice eroare in cod )
-        b=sumb.contents[11]
-        for verdict in b.find_all('span', class_='submissionVerdictWrapper'): 
-            scor = verdict.contents[0].string
-        
-        #extrage data
-        c = sumb.contents[3]
-        for date in c.find_all('span'):
-            data=date.get_text()
+            #extrage scorul problemelor : Accepted/Pretests passed
+            # , compilation error, time limit, skipped sau none(pentru orice eroare in cod )
+            b=sumb.contents[11]
+            for verdict in b.find_all('span', class_='submissionVerdictWrapper'): 
+                scor = verdict.contents[0].string
+            
+            #extrage data
+            c = sumb.contents[3]
+            for date in c.find_all('span'):
+                data=date.get_text()
 
-        result.append({
-                "nume_problema": nume_problema,
-                "id_problema": link_problema,
-                "scor": scor,
-                "sursa": "codeforces",
-                "data": data
-            })
+            result.append({
+                    "nume_problema": nume_problema.strip(),
+                    "id_problema": link_problema,
+                    "scor": scor,
+                    "sursa": "codeforces",
+                    "data": data
+                })
 
     return result
         
