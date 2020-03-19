@@ -22,17 +22,40 @@ def _getUser(user, page):
     soup = BeautifulSoup(r.content, 'html.parser')
     table = soup.find('table', class_='status-frame-datatable')
     result= [] 
+
     for sumb in table.find_all('tr'):
-        data = sumb.find('span', class_="format-time")
-        print(data)
+        link_problema = ""
+        nume_problema = ""
+        scor = ""
+        data = ""
+        #extrage numele si id-ul problemelor
+        link = sumb.contents[7].find_all('a')
+        for x in link:
+            link_problema=x['href']
+            nume_problema = x.get_text()
+
+        #extrage scorul problemelor : Accepted/Pretests passed
+        # , compilation error, time limit, skipped sau none(pentru orice eroare in cod )
+        b=sumb.contents[11]
+        for verdict in b.find_all('span', class_='submissionVerdictWrapper'): 
+            scor = verdict.contents[0].string
+        
+        #extrage data
+        c = sumb.contents[3]
+        for date in c.find_all('span'):
+            data=date.get_text()
+
+        result.append({
+                "nume_problema": nume_problema,
+                "id_problema": link_problema,
+                "scor": scor,
+                "sursa": "codeforces",
+                "data": data
+            })
+
+    return result
         
     
-    """result.append({
-            "problema": nume,
-            "scor": scor,
-            "sursa": "infoarena",
-            "data": data
-        })"""
 
 
 def _getNumberOfPages(user):
@@ -54,7 +77,7 @@ def _getNumberOfPages(user):
 def getUser(user):
     nrpagini = _getNumberOfPages(user)
     result = []
-    for i in range(0,nrpagini):
+    for i in range(1,nrpagini+1):
         result+=_getUser(user, i)
 
     return result
@@ -65,7 +88,6 @@ def testUser(user):
         return False
     return True
 
-
-
 if __name__ == "__main__":
-    _getUser("RedPipper",1)
+    for a in getUser("Tedyst"):
+        print(a)
