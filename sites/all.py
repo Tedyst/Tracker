@@ -1,5 +1,5 @@
 import importlib
-SITES = ['pbinfo', 'infoarena']
+SITES = ['pbinfo', 'codeforces', 'infoarena']
 
 
 def getUser(user):

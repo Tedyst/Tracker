@@ -6,7 +6,7 @@ import operator
 
 app = Flask(__name__)
 PORT = 8080
-SITES = ['pbinfo', 'infoarena', 'all']
+SITES = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
 
 @app.route('/')
@@ -22,8 +22,7 @@ def api():
     if site not in SITES:
         return render_template('404.html')
     data = query(user, site)
-    if site == "all":
-        data = sorted(data, key=operator.itemgetter("data"))
+    data = sorted(data, key=operator.itemgetter("data"))
     return app.response_class(
         response=json.dumps(data),
         status=200,
