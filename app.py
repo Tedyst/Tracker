@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
-from .db import query
+from db import query
 import json
 import operator
 
