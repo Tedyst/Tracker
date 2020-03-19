@@ -1,33 +1,18 @@
 <html>
+    <header>
+        <title>Index</title>
+    </header>
 
-<head>
-    <title>Tracker</title>
-</head>
-
-<body>
-<table style="width:100%">
-    <tr>
-        <th>Problema</th>
-        <th>Scor</th>
-        <th>Sursa</th>
-        <th>Data</th>
-    </tr>
-    <tr>
-        <th></th>
-    </tr>
-    <tr>
-        <th></th>
-    </tr>
-    {% for i in problems %}
-    <tr>
-        <th>{{ i['problema'] }}</th>
-        <th>{{ i['scor'] }}</th>
-        <th>{{ i['sursa'] }}</th>
-        <th>{{ i['data'] }}</th>
-    </tr>
-    {% endfor %}
-</table> 
-
-</body>
+    <body>
+        <form action="search" method="GET">
+            <select name="site">
+                {% for i in SITES %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="user" placeholder="Username"/>
+            <input type="submit" value="Trimite"/>
+        </form>
+    </body>
 
 </html>
