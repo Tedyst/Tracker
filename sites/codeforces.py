@@ -35,16 +35,21 @@ def _getUser(user, page):
                 link_problema=x['href']
                 nume_problema = x.get_text()
 
-            #extrage scorul problemelor : Accepted/Pretests passed
-            # , compilation error, time limit, skipped sau none(pentru orice eroare in cod )
-            b=sumb.contents[11]
-            for verdict in b.find_all('span', class_='submissionVerdictWrapper'): 
-                scor = verdict.contents[0].string
+            # Alta incercare de scor
+            scor = ""
+            try:
+                scor = sumb.contents[11].contents[1].contents[0].contents[0]
+                try:
+                    scor += sumb.contents[11].contents[1].contents[0].contents[1].contents[0]
+                except IndexError:
+                    pass
+            except AttributeError:
+                scor = sumb.contents[11].contents[1].contents[0]
             
-            #extrage data
+            # extrage data
             c = sumb.contents[3]
             for date in c.find_all('span'):
-                data=date.get_text()
+                data = date.get_text()
 
             result.append({
                     "problema": nume_problema.strip(),
