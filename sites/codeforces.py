@@ -47,7 +47,7 @@ def _getUser(user, page):
                 data=date.get_text()
 
             result.append({
-                    "nume_problema": nume_problema.strip(),
+                    "problema": nume_problema.strip(),
                     "id_problema": link_problema,
                     "scor": scor,
                     "sursa": "codeforces",

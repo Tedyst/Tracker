@@ -4,7 +4,6 @@ import os
 
 os.chdir("sites")
 
-
 def user_convert(user, site):
     mod = importlib.import_module(site, ".sites." + site)
     if mod.testUser(user) is False:
