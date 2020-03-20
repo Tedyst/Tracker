@@ -1,7 +1,6 @@
 import pandas as pd
 import importlib
 
-
 def user_convert(user, site):
     mod = importlib.import_module("sites." + site)
     if mod.testUser(user) is False:
