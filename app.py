@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
-from db import getSurseAPI
+from db import getSurseAPI, getSurse, createUser, updateUsername
 from classes import sortProbleme_date
 import json
-import operator
 from classes import SITES_ALL as SITES
 app = Flask(__name__)
 PORT = 8080
@@ -38,10 +37,17 @@ def search():
     site = request.args.get('site')
     if site not in SITES:
         return render_template('404.html')
-    data = getSurseAPI(user, site)
+    data = getSurse(user, site)
+    if data is None:
+        return render_template('404.html')
     data = sorted(data, key=sortProbleme_date)
     return render_template('search.html', problems=data)
 
+
+createUser("Tedyst", "parola")
+updateUsername("Tedyst", "Tedyst", "pbinfo")
+updateUsername("Tedyst", "Tedyst", "codeforces")
+updateUsername("Tedyst", "Tedyst", "infoarena")
 
 if __name__ == "__main__":
     app.run()

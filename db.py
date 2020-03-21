@@ -1,7 +1,8 @@
 import sqlalchemy
 import importlib
-from classes import User, Problema, sqlBase, SITES
+from classes import User, Problema, sqlBase, SITES, SITES_ALL
 from typing import Iterable
+import time
 
 
 engine = sqlalchemy.create_engine('sqlite:///data.db', echo=True)
@@ -9,12 +10,35 @@ Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
 
 
-def getSurse(iduser, site) -> Iterable[Problema]:
+def getSurse(nickname, site) -> Iterable[Problema]:
     sess = Session()
+    user = sess.query(User).filter(User.nickname == nickname).first()
+    if user is None:
+        return
     if site == "all":
-        q = sess.query(Problema).filter(Problema.iduser == iduser).all()
+        for site in SITES:
+            if user[site] is not None:
+                if user["last_" + site] is None:
+                    _updateSurse(sess, user, site)
+                elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+                    _updateSurse(sess, user, site)
+        sess.commit()
+        return _getSurse(user, sess, "all")
+    if user[site] is not None:
+        if user["last_" + site] is None:
+            updateSurse(user, site)
+        elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+            updateSurse(user, site)
+        return _getSurse(user, sess, site)
+    return None
+
+
+def _getSurse(user: User, sess: Session, site) -> Iterable[Problema]:
+    if site == "all":
+        q = sess.query(Problema).filter(Problema.iduser == user.id).all()
     else:
-        q = sess.query(Problema).filter(Problema.iduser == iduser).filter(Problema.sursa == site).all()
+        q = sess.query(Problema).filter(Problema.iduser == user.id)\
+                                .filter(Problema.sursa == site).all()
     return q
 
 
@@ -28,27 +52,34 @@ def getSurseAPI(user, site) -> Iterable[Problema]:
     return q
 
 
-def addSurse(probleme):
-    s = Session()
+def addSurse(s: Session, probleme):
     for i in probleme:
         if type(i) != Problema:
             continue
         sursa = s.query(Problema).filter(Problema.data == i.data).first()
         if sursa is None:
             s.add(i)
-    s.commit()
 
 
-def updateSurse(nickname, sursa):
-    if sursa == "all":
-        for i in SURSE:
-            updateSurse(nickname, i)
+def _updateSurse(s: Session, user: User, sursa):
+    if sursa not in SITES_ALL:
         return
-    mod = importlib.import_module("sites." + sursa)
-    user = getUser(nickname)
-    print("Updating surse for " + user.nickname)
-    if mod.testUser(user[sursa]):
-        addSurse(mod.getUser(user.id, user[sursa]))
+    if sursa == "all":
+        for i in SITES:
+            updateSurse(s, user, i)
+        return
+    if user[sursa] is not None:
+        mod = importlib.import_module("sites." + sursa)
+        print("Updating surse for " + user.nickname)
+        if mod.testUser(user[sursa]):
+            addSurse(s, mod.getUser(user.id, user[sursa]))
+        user["last_" + sursa] = int(time.time())
+
+
+def updateSurse(user: User, sursa):
+    s = Session()
+    _updateSurse(s, user, sursa)
+    s.commit()
 
 
 def userExists(nickname):
@@ -81,11 +112,3 @@ def updateUsername(nickname, username, site):
     user = s.query(User).filter(User.nickname == nickname).first()
     user[site] = username
     s.commit()
-
-
-if __name__ == "__main__":
-    createUser("Tedyst", "parola")
-    updateUsername("Tedyst", "Tedyst", "pbinfo")
-    updateSurse("Tedyst", "pbinfo")
-    for i in getSurse(1, "pbinfo"):
-        print(i.scor)

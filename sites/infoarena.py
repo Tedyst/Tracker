@@ -75,6 +75,7 @@ def _getUser(idparent, user, page) -> [Problema]:
                             scor,
                             data,
                             user)
+        result.append(problema)
 
     return result
 

@@ -15,6 +15,7 @@ class User(sqlBase):
 
     for i in SITES:
         vars()[i] = Column(String)
+        vars()["last_" + i] = Column(Integer)
     del i
 
     def __init__(self, nickname, password):
@@ -24,12 +25,14 @@ class User(sqlBase):
     # Te rog nu intreba
     # Am facut asta ca sa putem accesa usernameurile ca user["pbinfo"] si user.pbinfo
     def __getitem__(self, key):
-        if key in SITES:
+        try:
             return vars(self)[key]
+        except Exception as e:
+            print(e)
+            return None
 
     def __setitem__(self, key, value):
-        if key in SITES:
-            exec("self." + key + " = '" + value + "'")
+        exec("self." + str(key) + " = '" + str(value) + "'")
 
 
 class Problema(sqlBase):
