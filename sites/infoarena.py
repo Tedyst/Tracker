@@ -5,6 +5,7 @@ from bs4.element import NavigableString
 import datetime
 import time
 from urllib.parse import urlencode
+from classes import Problema
 
 URL = "https://infoarena.ro/monitor?"
 
@@ -43,7 +44,7 @@ def _getNumberOfPages(user):
     return int(pages.contents[nr].contents[0])
 
 
-def _getUser(user, page):
+def _getUser(idparent, user, page) -> [Problema]:
     PARAMS = {
         "only_table": "1",
         "first_entry": page*100,
@@ -67,20 +68,22 @@ def _getUser(user, page):
             scor = scor.replace("Evaluare completa: ", "")
             scor = int(scor.replace("puncte", ""))
 
-        result.append({
-            "problema": nume,
-            "scor": scor,
-            "sursa": "infoarena",
-            "data": data
-        })
+        problema = Problema(idparent,
+                            "infoarena",
+                            nume,  # nume
+                            nume,  # id
+                            scor,
+                            data,
+                            user)
+
     return result
 
 
-def getUser(user):
+def getUser(idparent, user) -> [Problema]:
     nrpagini = _getNumberOfPages(user)
     result = []
     for i in range(0, nrpagini):
-        result += _getUser(user, i)
+        result += _getUser(idparent, user, i)
     return result
 
 
