@@ -111,4 +111,5 @@ def updateUsername(nickname, username, site):
     s = Session()
     user = s.query(User).filter(User.nickname == nickname).first()
     user[site] = username
+    _updateSurse(s, user, site)
     s.commit()
