@@ -66,11 +66,11 @@ def _updateSurse(s: Session, user: User, sursa):
         return
     if sursa == "all":
         for i in SITES:
-            updateSurse(s, user, i)
+            updateSurse(user, i)
         return
     if user[sursa] is not None:
         mod = importlib.import_module("sites." + sursa)
-        print("Updating surse for " + user.nickname)
+        print("Updating surse for ", user.nickname, " from site ", sursa)
         if mod.testUser(user[sursa]):
             addSurse(s, mod.getUser(user.id, user[sursa]))
         user["last_" + sursa] = int(time.time())
