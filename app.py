@@ -41,5 +41,5 @@ def search():
     return render_template('search.html', problems=data)
 
 
-if __name__ == "__main__"":
+if __name__ == "__main__":
     app.run()
