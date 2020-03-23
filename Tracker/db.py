@@ -4,12 +4,14 @@ from Tracker.classes import User, Problema, sqlBase, SITES, SITES_ALL
 from typing import Iterable
 import time
 import sys
+from Tracker.utils import validUsername
+
 
 # If running a test
 if "pytest" in sys.modules:
-    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=True)
+    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
 else:
-    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=True)
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
 
@@ -111,6 +113,8 @@ def getUser(nickname):
 
 def updateUsername(nickname, username, site):
     if site not in SITES:
+        return
+    if not validUsername(username, site):
         return
     s = Session()
     user = s.query(User).filter(User.nickname == nickname).first()
