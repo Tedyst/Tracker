@@ -1,7 +1,5 @@
 import Tracker.db as db
 from Tracker import Problema
-import pytest
-import contextlib
 
 
 def test_pbinfo():
