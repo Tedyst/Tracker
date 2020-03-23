@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
-from db import getSurseAPI, getSurse, createUser, updateUsername
-from classes import sortProbleme_date
+from Tracker.db import getSurseAPI, getSurse, createUser, updateUsername
+from Tracker.classes import sortProbleme_date
 import json
-from classes import SITES_ALL as SITES
+from Tracker.classes import SITES_ALL as SITES
 app = Flask(__name__)
 PORT = 8080
 
