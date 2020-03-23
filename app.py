@@ -45,9 +45,7 @@ def search():
 
 
 createUser("Tedyst", "parola")
-updateUsername("Tedyst", "Tedyst", "pbinfo")
-updateUsername("Tedyst", "Tedyst", "codeforces")
-updateUsername("Tedyst", "Tedyst", "infoarena")
+updateUsername("Tedyst", "Tedyst123", "codeforces")
 
 if __name__ == "__main__":
     app.run()
