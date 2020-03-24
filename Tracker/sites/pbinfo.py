@@ -3,7 +3,7 @@ import requests
 import json
 import datetime
 import time
-from classes import Problema
+from Tracker.classes import Problema
 
 URL = "https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php"
 
