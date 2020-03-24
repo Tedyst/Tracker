@@ -102,8 +102,7 @@ def api_users(nickname, site):
         )
 
     response = {
-        # "updating": db.needsUpdate(nickname, site),
-        "updating": True,
+        "updating": db.needsUpdate(nickname, site),
         "result": {}
     }
 
