@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
 import Tracker.db as db
-from classes import sortProbleme_date, User
+from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
 import json
-from classes import SITES_ALL, SITES
 app = Flask(__name__)
 PORT = 8080
 ERROR_JSON = {

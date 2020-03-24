@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import time
-from classes import Problema
+from Tracker.classes import Problema
 
 URL = "https://codeforces.com/submissions/"
 
@@ -55,8 +55,8 @@ def _getUser(idparent, user, page) -> [Problema]:
 
 def _getNumberOfPages(user):
     r = requests.get(url=URL + user)
-    if r.url == "https://codeforces.com":
-        return -1
+    if r.url == "https://codeforces.com/":
+        return None
     else:
         result = 0
         soup = BeautifulSoup(r.content, 'html.parser')
@@ -75,6 +75,6 @@ def getUser(idparent, user) -> [Problema]:
 
 
 def testUser(user):
-    if _getNumberOfPages(user) == -1:
+    if _getNumberOfPages(user) == None:
         return False
     return True

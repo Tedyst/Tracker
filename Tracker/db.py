@@ -1,11 +1,17 @@
 import sqlalchemy
 import importlib
-from classes import User, Problema, sqlBase, SITES, SITES_ALL
+from Tracker.classes import User, Problema, sqlBase, SITES, SITES_ALL
 from typing import Iterable
 import time
+import sys
+from Tracker.utils import validUsername
 
 
-engine = sqlalchemy.create_engine('sqlite:///data.db', echo=True)
+# If running a test
+if "pytest" in sys.modules:
+    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
+else:
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
 
@@ -69,7 +75,7 @@ def _updateSurse(s: Session, user: User, sursa):
             updateSurse(user, i)
         return
     if user[sursa] is not None:
-        mod = importlib.import_module("sites." + sursa)
+        mod = importlib.import_module("Tracker.sites." + sursa)
         print("Updating surse for ", user.nickname, " from site ", sursa)
         if mod.testUser(user[sursa]):
             addSurse(s, mod.getUser(user.id, user[sursa]))
@@ -107,6 +113,8 @@ def getUser(nickname):
 
 def updateUsername(nickname, username, site):
     if site not in SITES:
+        return
+    if not validUsername(username, site):
         return
     s = Session()
     user = s.query(User).filter(User.nickname == nickname).first()
