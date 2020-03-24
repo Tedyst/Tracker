@@ -91,18 +91,17 @@ def api_users(nickname, site):
         )
     sess = db.Session()
 
-    # if not db.userExists(nickname):
-    #     error = ERROR_JSON
-    #     error["message"] = "This user does not exist"
-    #     return app.response_class(
-    #         response=json.dumps(error),
-    #         status=404,
-    #         mimetype='application/json'
-    #     )
+    if s.query(User).filter(User.nickname == nickname).first() is None:
+        error = ERROR_JSON
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
 
     response = {
         "updating": db.needsUpdate(nickname, site),
-        # "updating": True,
         "result": {}
     }
 
