@@ -107,10 +107,6 @@ def api_users(nickname, site):
 
     user = db.getUser(nickname)
     sess = db.Session()
-    if response["updating"]:
-        sess = db.Session()
-        executor.submit(db._updateSurse, sess, user, site)
-        sess.commit()
 
     data = db._getSurse(user, sess, site)
     result = []
