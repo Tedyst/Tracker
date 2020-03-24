@@ -113,3 +113,13 @@ def updateUsername(nickname, username, site):
     user[site] = username
     _updateSurse(s, user, site)
     s.commit()
+
+
+def isTracked(username, site):
+    if site not in SITES:
+        return False
+    s = Session()
+    problema = s.query(Problema).filter(Problema.username == username).first()
+    if problema == None:
+        return False
+    return True
