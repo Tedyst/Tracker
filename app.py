@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
-from db import query
+from db import getSurseAPI, getSurse, createUser, updateUsername
+from classes import sortProbleme_date
 import json
-import operator
-
+from classes import SITES_ALL as SITES
 app = Flask(__name__)
 PORT = 8080
-SITES = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
 
 @app.route('/')
@@ -21,10 +20,12 @@ def api():
     site = request.args.get('site')
     if site not in SITES:
         return render_template('404.html')
-    data = query(user, site)
-    data = sorted(data, key=operator.itemgetter("data"))
+    data = getSurseAPI(user, site)
+    result = []
+    for i in data:
+        result.append(i.to_dict())
     return app.response_class(
-        response=json.dumps(data),
+        response=json.dumps(result),
         status=200,
         mimetype='application/json'
     )
@@ -36,10 +37,17 @@ def search():
     site = request.args.get('site')
     if site not in SITES:
         return render_template('404.html')
-    data = query(user, site)
-    data = sorted(data, key=operator.itemgetter("data"))
+    data = getSurse(user, site)
+    if data is None:
+        return render_template('404.html')
+    data = sorted(data, key=sortProbleme_date)
     return render_template('search.html', problems=data)
 
 
-if __name__ == "__main__"":
+createUser("Tedyst", "parola")
+updateUsername("Tedyst", "Tedyst", "pbinfo")
+updateUsername("Tedyst", "Tedyst", "codeforces")
+updateUsername("Tedyst", "Tedyst", "infoarena")
+
+if __name__ == "__main__":
     app.run()
