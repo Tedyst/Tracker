@@ -114,8 +114,8 @@ def api_users(nickname, site):
             mimetype='application/json'
         )
     sess = scoped_session(db.Session)()
-    
     # In cazul in care userul cerut nu exista
+    if s.query(User).filter(User.nickname == nickname).first() is None:
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
