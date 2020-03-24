@@ -90,7 +90,7 @@ def updateSurse(user: User, sursa):
 
 def userExists(nickname):
     s = Session()
-    user = s.query(User).filter(nickname == nickname).first()
+    user = s.query(User).filter(User.nickname == nickname).first()
     if user is None:
         return False
     return True
