@@ -5,13 +5,15 @@ from typing import Iterable
 import time
 import sys
 from Tracker.utils import validUsername
+from sqlalchemy.pool import StaticPool
+updating = {}
 
 
 # If running a test
 if "pytest" in sys.modules:
-    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
+    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False, poolclass=StaticPool)
 else:
-    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False, connect_args={'check_same_thread': False}, poolclass=StaticPool)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
 
@@ -94,6 +96,7 @@ def updateAndCommit(nickname, sursa):
     _updateSurse(s, user, sursa)
     s.commit()
     print("Committed to databsase")
+    user.lock.release()
 
 
 def userExists(nickname):

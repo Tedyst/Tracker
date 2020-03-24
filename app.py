@@ -4,6 +4,7 @@ import Tracker.db as db
 from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
+from sqlalchemy.orm import scoped_session
 app = Flask(__name__)
 PORT = 8080
 ERROR_JSON = {
@@ -89,7 +90,7 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
-    sess = db.Session()
+    sess = scoped_session(db.Session)()
 
     if s.query(User).filter(User.nickname == nickname).first() is None:
         error = ERROR_JSON
@@ -101,7 +102,8 @@ def api_users(nickname, site):
         )
 
     response = {
-        "updating": db.needsUpdate(nickname, site),
+        # "updating": db.needsUpdate(nickname, site),
+        "updating": True,
         "result": {}
     }
 
@@ -115,6 +117,11 @@ def api_users(nickname, site):
     sess.commit()
 
     if response["updating"]:
+        if user.lock.locked():
+            return Response(json.dumps(response),
+                        status=303,
+                        mimetype='application/json')
+        user.lock.acquire()
         thread = Thread(target=db.updateAndCommit, args=[nickname, site])
         thread.start()
 
