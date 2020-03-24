@@ -11,10 +11,10 @@ from Tracker.utils import validUsername
 if "pytest" in sys.modules:
     engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
 else:
-    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=True)
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
-neededToBeAdded = []
+
 
 def getSurse(nickname, site) -> Iterable[Problema]:
     sess = Session()
