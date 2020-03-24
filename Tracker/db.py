@@ -17,6 +17,22 @@ sqlBase.metadata.create_all(engine)
 
 
 def getSurse(nickname, site) -> Iterable[Problema]:
+    """
+    Returneaza sursele unui username de pe un site
+
+    !!! site poate fi doar ['pbinfo' , 'codeforces', 'infoarena', 'all']
+
+    Args:
+        @nickname -> numele din baza de date
+        @site -> site-ul de pe care sunt cerute sursele
+
+    Returns:
+        Iterable[Problema] -> un array cu probleme
+
+    Usage:
+        for problema in getSurse():
+            print(problema.idprob)
+    """
     sess = Session()
     user = sess.query(User).filter(User.nickname == nickname).first()
     if user is None:
