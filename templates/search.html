@@ -7,30 +7,20 @@
 <body>
 <a href="../">Back</a>
 <br>
-<table style="width:100%">
-    <tr>
-        <th>Problema</th>
-        <th>Scor</th>
-        <th>Sursa</th>
-        <th>Data</th>
-        <th>ID</th>
-    </tr>
-    <tr>
-        <th></th>
-    </tr>
-    <tr>
-        <th></th>
-    </tr>
-    {% for i in problems %}
-    <tr>
-        <th>{{ i.problema }}</th>
-        <th>{{ i.scor }}</th>
-        <th>{{ i.sursa }}</th>
-        <th>{{ i.data }}</th>
-        <th>{{ i.id }}</th>
-    </tr>
-    {% endfor %}
-</table> 
+<div id="updating"></div>
+<br>
+<div id="probleme"></div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+    $.getJSON('{{ url_for("api_users", nickname="Tedyst", site="pbinfo" ) }}', function(data) {
+        document.getElementById("updating").innerHTML = data["updating"];
+        text = ""
+        for(var problema in data["result"]){
+            text += data["result"][problema]["sursa"] + ' ' + data["result"][problema]["problema"] + '</br>'
+        }
+        document.getElementById("probleme").innerHTML = text; 
+    });
+</script>
 
 </body>
 
