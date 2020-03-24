@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 import Tracker.db as db
 from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
 import json
-from flask_executor import Executor
+from threading import Thread
 app = Flask(__name__)
-executor = Executor(app)
 PORT = 8080
 ERROR_JSON = {
     "message": None
@@ -90,28 +89,39 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
-    if not db.userExists(nickname):
-        error = ERROR_JSON
-        error["message"] = "This user does not exist"
-        return app.response_class(
-            response=json.dumps(error),
-            status=404,
-            mimetype='application/json'
-        )
+    sess = db.Session()
+
+    # if not db.userExists(nickname):
+    #     error = ERROR_JSON
+    #     error["message"] = "This user does not exist"
+    #     return app.response_class(
+    #         response=json.dumps(error),
+    #         status=404,
+    #         mimetype='application/json'
+    #     )
 
     response = {
         "updating": db.needsUpdate(nickname, site),
+        # "updating": True,
         "result": {}
     }
 
-    user = db.getUser(nickname)
-    sess = db.Session()
+    user = sess.query(User).filter(User.nickname == nickname).first()
 
     data = db._getSurse(user, sess, site)
     result = []
     for i in data:
         result.append(i.to_dict())
     response["result"] = result
+    sess.commit()
+
+    if response["updating"]:
+        thread = Thread(target=db.updateAndCommit, args=[nickname, site])
+        thread.start()
+
+        return Response(json.dumps(response),
+                        status=303,
+                        mimetype='application/json')
 
     return app.response_class(
         response=json.dumps(response),

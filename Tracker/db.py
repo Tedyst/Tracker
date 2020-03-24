@@ -11,10 +11,10 @@ from Tracker.utils import validUsername
 if "pytest" in sys.modules:
     engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
 else:
-    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=True)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
-
+neededToBeAdded = []
 
 def getSurse(nickname, site) -> Iterable[Problema]:
     sess = Session()
@@ -88,6 +88,14 @@ def updateSurse(user: User, sursa):
     s.commit()
 
 
+def updateAndCommit(nickname, sursa):
+    s = Session()
+    user = s.query(User).filter(User.nickname == nickname).first()
+    _updateSurse(s, user, sursa)
+    s.commit()
+    print("Committed to databsase")
+
+
 def userExists(nickname):
     s = Session()
     user = s.query(User).filter(nickname == nickname).first()
@@ -136,10 +144,15 @@ def isTracked(username, site):
 def needsUpdate(username, site):
     user = getUser(username)
     if site == "all":
-        for i in SITES:
-            if time.time() - user["last_" + i] > 600:
-                return True
-        return False
-    if time.time() - user["last_" + site] > 600:
-        return True
+        for site in SITES:
+            if user[site] is not None:
+                if user["last_" + site] is None:
+                    return True
+                elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+                    return True
+    if user[site] is not None:
+        if user["last_" + site] is None:
+            return True
+        elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+            return True
     return False
