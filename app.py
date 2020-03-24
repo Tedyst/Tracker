@@ -36,11 +36,16 @@ def api_direct(user, site):
             mimetype='application/json'
         )
     data = db.getSurseAPI(user, site)
+    response = {
+        "updating": False,
+        "result": {}
+    }
     result = []
     for i in data:
         result.append(i.to_dict())
+    response["result"] = result
     return app.response_class(
-        response=json.dumps(result),
+        response=json.dumps(response),
         status=200,
         mimetype='application/json'
     )
@@ -84,12 +89,27 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
+    if not db.userExists(user):
+        error = ERROR_JSON
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    response = {
+        "updating": False,
+        "result": {}
+    }
     data = db.getSurse(nickname, site)
     result = []
     for i in data:
         result.append(i.to_dict())
+    response["result"] = result
+
     return app.response_class(
-        response=json.dumps(result),
+        response=json.dumps(response),
         status=200,
         mimetype='application/json'
     )
