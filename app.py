@@ -4,7 +4,9 @@ import Tracker.db as db
 from classes import sortProbleme_date, User
 import json
 from classes import SITES_ALL, SITES
+from flask_executor import Executor
 app = Flask(__name__)
+executor = Executor(app)
 PORT = 8080
 ERROR_JSON = {
     "message": None
@@ -89,7 +91,7 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
-    if not db.userExists(user):
+    if not db.userExists(nickname):
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -99,10 +101,18 @@ def api_users(nickname, site):
         )
 
     response = {
-        "updating": False,
+        "updating": db.needsUpdate(nickname, site),
         "result": {}
     }
-    data = db.getSurse(nickname, site)
+
+    user = db.getUser(nickname)
+    sess = db.Session()
+    if response["updating"]:
+        sess = db.Session()
+        executor.submit(db._updateSurse, sess, user, site)
+        sess.commit()
+
+    data = db._getSurse(user, sess, site)
     result = []
     for i in data:
         result.append(i.to_dict())

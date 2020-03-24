@@ -120,6 +120,18 @@ def isTracked(username, site):
         return False
     s = Session()
     problema = s.query(Problema).filter(Problema.username == username).first()
-    if problema == None:
+    if problema is None:
         return False
     return True
+
+
+def needsUpdate(username, site):
+    user = getUser(username)
+    if site == "all":
+        for i in SITES:
+            if time.time() - user["last_" + i] > 600:
+                return True
+        return False
+    if time.time() - user["last_" + site] > 600:
+        return True
+    return False
