@@ -5,13 +5,15 @@ from typing import Iterable
 import time
 import sys
 from Tracker.utils import validUsername
+from sqlalchemy.pool import StaticPool
+updating = {}
 
 
 # If running a test
 if "pytest" in sys.modules:
-    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False)
+    engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False, poolclass=StaticPool)
 else:
-    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False)
+    engine = sqlalchemy.create_engine('sqlite:///data.db', echo=False, connect_args={'check_same_thread': False}, poolclass=StaticPool)
 Session = sqlalchemy.orm.sessionmaker(bind=engine)
 sqlBase.metadata.create_all(engine)
 
@@ -104,6 +106,19 @@ def updateSurse(user: User, sursa):
     s.commit()
 
 
+def updateAndCommit(nickname, sursa):
+    try:
+        s = Session()
+        user = s.query(User).filter(User.nickname == nickname).first()
+        _updateSurse(s, user, sursa)
+        s.commit()
+        print("Committed to databsase")
+        user.lock.release()
+    except Exception as e:
+        user.lock.release()
+        raise e
+
+
 def userExists(nickname):
     s = Session()
     user = s.query(User).filter(User.nickname == nickname).first()
@@ -152,10 +167,15 @@ def isTracked(username, site):
 def needsUpdate(username, site):
     user = getUser(username)
     if site == "all":
-        for i in SITES:
-            if time.time() - user["last_" + i] > 600:
-                return True
-        return False
-    if time.time() - user["last_" + site] > 600:
-        return True
+        for site in SITES:
+            if user[site] is not None:
+                if user["last_" + site] is None:
+                    return True
+                elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+                    return True
+    if user[site] is not None:
+        if user["last_" + site] is None:
+            return True
+        elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+            return True
     return False

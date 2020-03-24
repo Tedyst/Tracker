@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 import Tracker.db as db
 from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
 import json
-from flask_executor import Executor
+from threading import Thread
+from sqlalchemy.orm import scoped_session
 app = Flask(__name__)
-executor = Executor(app)
 PORT = 8080
 ERROR_JSON = {
     "message": None
@@ -113,8 +113,9 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
+    sess = scoped_session(db.Session)()
+    
     # In cazul in care userul cerut nu exista
-    if not db.userExists(nickname):
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -131,14 +132,27 @@ def api_users(nickname, site):
         "result": {}
     }
 
-    user = db.getUser(nickname)
-    sess = db.Session()
+    user = sess.query(User).filter(User.nickname == nickname).first()
 
     data = db._getSurse(user, sess, site)
     result = []
     for i in data:
         result.append(i.to_dict())
     response["result"] = result
+    sess.commit()
+
+    if response["updating"]:
+        if user.lock.locked():
+            return Response(json.dumps(response),
+                        status=303,
+                        mimetype='application/json')
+        user.lock.acquire()
+        thread = Thread(target=db.updateAndCommit, args=[nickname, site])
+        thread.start()
+
+        return Response(json.dumps(response),
+                        status=303,
+                        mimetype='application/json')
 
     # Pentru a specifica browserului ca este un raspuns JSON
     return app.response_class(

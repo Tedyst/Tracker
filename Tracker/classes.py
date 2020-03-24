@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 import json
+import threading
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 sqlBase = declarative_base()
@@ -12,6 +13,7 @@ class User(sqlBase):
     fullname = Column(String(50))
     nickname = Column(String(50))
     password = Column(String(50))
+    lock = threading.Lock()
 
     for i in SITES:
         vars()[i] = Column(String)
