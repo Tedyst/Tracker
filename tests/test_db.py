@@ -30,3 +30,24 @@ def test_infoarena():
         if type(problema) != Problema:
             assert False
     assert True
+
+
+def test_notfound_pbinfo():
+    db.createUser("Tedyst", "parola")
+    db.updateUsername("Tedyst", "Tedyst123", "pbinfo")
+    user = db.getUser("Tedyst")
+    assert user["pbinfo"] is None
+
+
+def test_notfound_infoarena():
+    db.createUser("Tedyst", "parola")
+    db.updateUsername("Tedyst", "Tedyst123", "infoarena")
+    user = db.getUser("Tedyst")
+    assert user["pbinfo"] is None
+
+
+def test_notfound_codeforces():
+    db.createUser("Tedyst", "parola")
+    db.updateUsername("Tedyst", "Tedyst123", "codeforces")
+    user = db.getUser("Tedyst")
+    assert user["pbinfo"] is None
