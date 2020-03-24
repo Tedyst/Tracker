@@ -1,5 +1,5 @@
 import Tracker.db as db
-from Tracker import Problema
+from Tracker import Problema, User
 
 
 def test_pbinfo():
@@ -51,3 +51,18 @@ def test_notfound_codeforces():
     db.updateUsername("Tedyst", "Tedyst123", "codeforces")
     user = db.getUser("Tedyst")
     assert user["pbinfo"] is None
+
+
+def test_return_surse_db():
+    db.createUser("Tedyst", "parola")
+    sess = db.Session()
+    # Force set the username to skip updates
+    user = sess.query(User).filter(User.nickname == "Tedyst").first()
+    user["pbinfo"] = "Tedyst"
+
+    problema = Problema(user.id, "pbinfo", "test", "1", "100", 1, "Tedyst")
+    db.addSurse(sess, [problema])
+    sess.commit()
+
+    surse = db._getSurse(user, sess, "pbinfo")
+    assert problema == surse[0]
