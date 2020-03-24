@@ -91,12 +91,16 @@ def updateSurse(user: User, sursa):
 
 
 def updateAndCommit(nickname, sursa):
-    s = Session()
-    user = s.query(User).filter(User.nickname == nickname).first()
-    _updateSurse(s, user, sursa)
-    s.commit()
-    print("Committed to databsase")
-    user.lock.release()
+    try:
+        s = Session()
+        user = s.query(User).filter(User.nickname == nickname).first()
+        _updateSurse(s, user, sursa)
+        s.commit()
+        print("Committed to databsase")
+        user.lock.release()
+    except Exception as e:
+        user.lock.release()
+        raise e
 
 
 def userExists(nickname):
