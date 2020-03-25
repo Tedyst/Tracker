@@ -5,6 +5,7 @@ from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
 from sqlalchemy.orm import scoped_session
+import time
 app = Flask(__name__)
 PORT = 8080
 ERROR_JSON = {
@@ -105,8 +106,9 @@ def api_getuser(user):
 @app.route('/prob/<nickname>')
 def prob_user(nickname):
     sess = scoped_session(db.Session)()
+    user = sess.query(User).filter(User.nickname == nickname).first()
     # In cazul in care userul cerut nu exista
-    if sess.query(User).filter(User.nickname == nickname).first() is None:
+    if user is None:
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -123,21 +125,26 @@ def prob_user(nickname):
         "result": {}
     }
 
-    user = sess.query(User).filter(User.nickname == nickname).first()
-
     data = db._getSurse(user, sess, "all")
+
+    
     sess.commit()
+    username = ""
+    if user.fullname:
+        username = user.fullname
+    else:
+        username = user.nickname
 
     if response["updating"]:
         if user.lock.locked():
-            return render_template('prob.html', probleme=data, updating=True, user=user)
+            return render_template('prob.html', probleme=data, updating=True, user=username)
         user.lock.acquire()
         thread = Thread(target=db.updateAndCommit, args=[nickname, "all"])
         thread.start()
 
-        return render_template('prob.html', probleme=data, updating=True, user=user)
+        return render_template('prob.html', probleme=data, updating=True, user=username)
 
-    return render_template('prob.html', probleme=data, updating=False, user=user)
+    return render_template('prob.html', probleme=data, updating=False, user=username)
 
 
 @app.route('/dashboard')
@@ -250,4 +257,4 @@ def init():
 init()
 
 if __name__ == "__main__":
-    app.run()
+    app.run(threaded=True)
