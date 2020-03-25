@@ -25,6 +25,9 @@ def _getUser(idparent, user, page) -> [Problema]:
             for x in link:
                 idprob = x['href']
                 nume_problema = x.get_text()
+                nume_problema = nume_problema.replace('/contest/', '')
+                nume_problema = nume_problema.replace('/gym/', '')
+                nume_problema = nume_problema.replace('/problem/', '')
 
             # Alta incercare de scor
             scor = ""

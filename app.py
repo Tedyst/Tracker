@@ -103,10 +103,10 @@ def api_getuser(user):
 
 
 @app.route('/prob/<nickname>')
-def prob(nickname):
+def prob_user(nickname):
     sess = scoped_session(db.Session)()
     # In cazul in care userul cerut nu exista
-    if s.query(User).filter(User.nickname == nickname).first() is None:
+    if sess.query(User).filter(User.nickname == nickname).first() is None:
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -237,14 +237,17 @@ def search():
     data = sorted(data, key=sortProbleme_date)
     return render_template('search.html', problems=data)
 
+def init():
+    db.createUser("Tedyst", "parola")
+    s = db.Session()
+    user = s.query(User).filter(User.nickname == "Tedyst").first()
+    user["pbinfo"] = "Tedyst"
+    user["infoarena"] = "Tedyst"
+    user["codeforces"] = "Tedyst"
+    s.commit()
+    s.close()
 
-db.createUser("Tedyst", "parola")
-s = db.Session()
-user = s.query(User).filter(User.nickname == "Tedyst").first()
-user["pbinfo"] = "Tedyst"
-user["infoarena"] = "Tedyst"
-user["codeforces"] = "Tedyst"
-s.commit()
+init()
 
 if __name__ == "__main__":
     app.run()
