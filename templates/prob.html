@@ -1,4 +1,11 @@
 ﻿{% extends "base.html" %}
+{% block title %}
+    {% if user.fullname %}
+        {{ user.fullname }}
+    {% else %}
+        {{ user.nickname }}
+    {% endif %}
+{% endblock %}
 {% block content %}
     <div class="wrapper">
         {% include 'sidebar.html' without context %}
@@ -44,10 +51,7 @@
                                                     <th>Data</th>
                                                 </tr>
                                             </tfoot>
-                                                    
-                                            <tbody id="table-body">
-                                                
-                                            </tbody>
+                                            <tbody id="table-body"></tbody>
                                         </table>
                                     </div>
                                 </div>
