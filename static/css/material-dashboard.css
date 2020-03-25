@@ -7989,7 +7989,6 @@ select.form-control[multiple], .form-group.is-focused select.form-control[multip
   color: #e91e63;
 }
 .alert.alert-with-icon {
-  margin-top: 43px;
   padding-left: 66px;
 }
 .alert.alert-with-icon i[data-notify="icon"] {
