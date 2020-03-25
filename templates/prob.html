@@ -324,12 +324,20 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
+                            <div class="alert alert-info alert-with-icon" data-notify="container">
+                                <i class="material-icons" data-notify="icon">notifications</i>
+                                <span data-notify="message">Sursele se actualizeaza. Actualizarea poate dura intre 10 si 20 de secunde.</span>
+                            </div>
                             <div class="card">
                                 <div class="card-header card-header-icon" data-background-color="purple">
                                     <i class="material-icons">assignment</i>
                                 </div>
                                 <div class="card-content">
-                                    <h4 class="card-title">DataTables.net</h4>
+                                    {% if user.fullname != None %}
+                                        <h4 class="card-title">Sursele trimise de utilizatorul {{ user.fullname }}</h4>
+                                    {% else %}
+                                        <h4 class="card-title">Sursele trimise de utilizatorul {{ user.nickname }}</h4>
+                                    {% endif %}
                                     <div class="toolbar">
                                         <!--        Here you can write extra buttons/actions for the toolbar              -->
                                     </div>
@@ -549,17 +557,26 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#datatables').DataTable({
-            "pagingType": "full_numbers",
-            "lengthMenu": [
-                [20, 50, 100, -1],
-                [20, 50, 100, "All"]
+            pagingType: "full_numbers",
+            lengthMenu: [
+                [15, 50, 100, -1],
+                [15, 50, 100, "All"]
             ],
+            order: [[ 4, "desc" ]],
             responsive: true,
+            columnDefs: [
+                {
+                    "type":"unix",
+                    "targets":4,
+                    "render": function (data, type, full, meta) {
+                        return moment.utc(data, "X").format('YYYY-MM-DD');
+                    }
+                }
+            ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search records",
+                searchPlaceholder: "Cauta prin surse trimise",
             }
-
         });
 
 

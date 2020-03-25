@@ -102,9 +102,42 @@ def api_getuser(user):
     )
 
 
-@app.route('/prob/<nume>')
-def prob(nume):
-    return render_template('prob.html', probleme=db.getSurse(nume, "all"))
+@app.route('/prob/<nickname>')
+def prob(nickname):
+    sess = scoped_session(db.Session)()
+    # In cazul in care userul cerut nu exista
+    if s.query(User).filter(User.nickname == nickname).first() is None:
+        error = ERROR_JSON
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Pentru a creea un raspuns folosind JSON
+    # @updating = daca va fi actualizat in viitorul apropiat
+    # @result = problemele userului de pe toate siteurile
+    response = {
+        "updating": db.needsUpdate(nickname, "all"),
+        "result": {}
+    }
+
+    user = sess.query(User).filter(User.nickname == nickname).first()
+
+    data = db._getSurse(user, sess, "all")
+    sess.commit()
+
+    if response["updating"]:
+        if user.lock.locked():
+            return render_template('prob.html', probleme=data, updating=True, user=user)
+        user.lock.acquire()
+        thread = Thread(target=db.updateAndCommit, args=[nickname, "all"])
+        thread.start()
+
+        return render_template('prob.html', probleme=data, updating=True, user=user)
+
+    return render_template('prob.html', probleme=data, updating=False, user=user)
 
 
 @app.route('/dashboard')
