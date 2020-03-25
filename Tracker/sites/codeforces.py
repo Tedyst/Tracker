@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import time
-from Tracker.classes import Problema
+from Tracker import Problema
 
 URL = "https://codeforces.com/submissions/"
 

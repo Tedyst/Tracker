@@ -1,22 +1,10 @@
 #!/usr/bin/python3
 from flask import render_template, request, Response
 from Tracker import app
-import Tracker.db as dbutils
-from Tracker.db import db
-from Tracker.db import sortProbleme_date, User, SITES, SITES_ALL
+import Tracker.dbutils as dbutils
+from Tracker import db, sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
-from sqlalchemy.orm import scoped_session
-import sys
-
-app.config['SECRET_KEY'] = "asd"
-if "pytest" in sys.modules:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-
-db.init_app(app)
-db.create_all()
 
 PORT = 8080
 ERROR_JSON = {

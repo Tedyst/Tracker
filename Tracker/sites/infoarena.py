@@ -5,7 +5,7 @@ from bs4.element import NavigableString
 import datetime
 import time
 from urllib.parse import urlencode
-from Tracker.classes import Problema
+from Tracker import Problema
 
 URL = "https://infoarena.ro/monitor?"
 
