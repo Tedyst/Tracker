@@ -107,39 +107,33 @@ def api_getuser(user):
 def prob_user(nickname):
     sess = scoped_session(db.Session)()
     user = sess.query(User).filter(User.nickname == nickname).first()
+
     # In cazul in care userul cerut nu exista
     if user is None:
-        error = ERROR_JSON
-        error["message"] = "This user does not exist"
         return app.response_class(
-            response=json.dumps(error),
+            response=render_template('404.html'),
             status=404,
             mimetype='application/json'
         )
 
-    # Pentru a creea un raspuns folosind JSON
-    # @updating = daca va fi actualizat in viitorul apropiat
-    # @result = problemele userului de pe toate siteurile
-    response = {
-        "updating": db.needsUpdate(nickname, "all"),
-        "result": {}
-    }
-
+    # Get user's problems
     data = db._getSurse(user, sess, "all")
-
     result = []
     for i in data:
         result.append(i.to_dict())
-
+    result = json.dumps(result)
     sess.commit()
 
-    if response["updating"]:
+    if db.needsUpdate(nickname, "all"):
+        # If it is locked, it means that the user is updating already
         if user.lock.locked():
             return render_template('prob.html', data=result, updating=True, user=user)
+        # Start updating user
         user.lock.acquire()
         thread = Thread(target=db.updateAndCommit, args=[nickname, "all"])
         thread.start()
 
+        # Return old data to the user before we finish updating
         return render_template('prob.html', data=result, updating=True, user=user)
 
     return render_template('prob.html', data=result, updating=False, user=user)
