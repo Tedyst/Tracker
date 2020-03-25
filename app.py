@@ -122,13 +122,13 @@ def prob_user(nickname):
     result = json.dumps(result)
     db.session.commit()
 
-    if dbutils.needsUpdate(nickname, "all"):
+    if dbutils.needsUpdate(user, "all"):
         # If it is locked, it means that the user is updating already
         if user.lock.locked():
             return render_template('prob.html', data=result, updating=True, user=user)
         # Start updating user
         user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[nickname, "all"])
+        thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
         thread.start()
 
         # Return old data to the user before we finish updating
@@ -150,8 +150,10 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
+
+    user = User.query.filter(User.nickname == nickname).first()
     # In cazul in care userul cerut nu exista
-    if User.query.filter(User.nickname == nickname).first() is None:
+    if user is None:
         error = {
             "message": None
         }
@@ -166,11 +168,9 @@ def api_users(nickname, site):
     # @updating = daca va fi actualizat in viitorul apropiat
     # @result = problemele userului de pe site-ul cerut
     response = {
-        "updating": dbutils.needsUpdate(nickname, site),
+        "updating": dbutils.needsUpdate(user, site),
         "result": {}
     }
-
-    user = User.query.filter(User.nickname == nickname).first()
 
     data = dbutils.getSurse(user, site)
     result = []

@@ -1,46 +1,7 @@
 import importlib
 from typing import Iterable
 import time
-from Tracker.utils import validUsername
 from Tracker import db, Problema, User, SITES, SITES_ALL
-
-
-def getSurse(nickname, site) -> Iterable[Problema]:
-    """
-    Returneaza sursele unui username de pe un site
-
-    !!! site poate fi doar ['pbinfo' , 'codeforces', 'infoarena', 'all']
-
-    Args:
-        @nickname -> numele din baza de date
-        @site -> site-ul de pe care sunt cerute sursele
-
-    Returns:
-        Iterable[Problema] -> un array cu probleme
-
-    Usage:
-        for problema in getSurse():
-            print(problema.idprob)
-    """
-    user = User.query.filter(User.nickname == nickname).first()
-    if user is None:
-        return
-    if site == "all":
-        for site in SITES:
-            if user[site] is not None:
-                if user["last_" + site] is None:
-                    updateSurse(user, site)
-                elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
-                    updateSurse(user, site)
-        db.session.commit()
-        return getSurse(user, "all")
-    if user[site] is not None:
-        if user["last_" + site] is None:
-            updateSurse(user, site)
-        elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
-            updateSurse(user, site)
-        return getSurse(user, site)
-    return None
 
 
 def getSurse(user: User, site) -> Iterable[Problema]:
@@ -78,9 +39,8 @@ def updateSurse(user: User, sursa):
     db.session.commit()
 
 
-def updateAndCommit(nickname, sursa):
+def updateAndCommit(user: User, sursa):
     try:
-        user = User.query.filter(User.nickname == nickname).first()
         updateSurse(user, sursa)
         db.session.commit()
         print("Committed to databsase")
@@ -110,12 +70,9 @@ def getUser(nickname):
     return user
 
 
-def updateUsername(nickname, username, site):
+def updateUsername(user: User, username, site):
     if site not in SITES:
         return
-    if not validUsername(username, site):
-        return
-    user = User.query.filter(User.nickname == nickname).first()
     user[site] = username
     updateSurse(user, site)
 
@@ -129,8 +86,7 @@ def isTracked(username, site):
     return True
 
 
-def needsUpdate(username, site):
-    user = getUser(username)
+def needsUpdate(user: User, site):
     if site == "all":
         for site in SITES:
             if user[site] is not None:
