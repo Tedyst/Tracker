@@ -1,4 +1,4 @@
-<div class="sidebar" data-active-color="rose" data-background-color="blue" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
+<div class="sidebar" data-active-color="rose" data-background-color="black" data-image="{{ url_for('static', filename='img/sidebar-1.jpg') }}">
     <div class="sidebar-wrapper">
         <div class="user">
             <div class="photo">
@@ -6,18 +6,38 @@
             </div>
         </div>
         <ul class="nav">
-            <li>
-                <a href="{{ url_for('dashboard') }}">
+            {% if page == 'index' %}
+                <li class="active">
+                    <a href="{{ url_for('index') }}">
+                        <i class="material-icons">dashboard</i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('index') }}">
                     <i class="material-icons">dashboard</i>
                     <p>Dashboard</p>
-                </a>
-            </li>
-            <li class="active">
-                <a href="{{ url_for('prob_user', nickname='Tedyst') }}">
-                    <i class="material-icons">dashboard</i>
-                    <p>prob_user Tedyst</p>
-                </a>
-            </li>
+                    </a>
+                </li>
+            {% endif %}
+            
+            {% if page == 'prob' %}
+                <li class="active">
+                    <a href="{{ url_for('prob_user', nickname='Tedyst') }}">
+                        <i class="material-icons">dashboard</i>
+                        <p>prob_user Tedyst</p>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('prob_user', nickname='Tedyst') }}">
+                        <i class="material-icons">dashboard</i>
+                        <p>prob_user Tedyst</p>
+                    </a>
+                </li>
+            {% endif %}
+
             <li>
                 <a data-toggle="collapse" href="#pagesExamples">
                     <i class="material-icons">image</i>
