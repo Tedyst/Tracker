@@ -85,5 +85,6 @@
         <script src="{{ url_for('static', filename='js/material-dashboard.js') }}"></script>
         <!-- Material Dashboard DEMO methods, don't include it in your project! -->
         <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+        {% block scripts %}{% endblock %}
     </body>
 </html>

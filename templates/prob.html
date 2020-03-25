@@ -41,16 +41,8 @@
                                                 </tr>
                                             </tfoot>
                                                     
-                                            <tbody>
-                                                {% for i in probleme %}
-                                                <tr>
-                                                    <td>{{ i.problema }}</td>
-                                                    <td><a href = '{{ i.url }}'>{{ i.idprob }}</a></td>
-                                                    <td>{{ i.scor }}</td>
-                                                    <td>{{ i.sursa }}</td>
-                                                    <td>{{ i.data }}</td>
-                                                </tr>
-                                                {% endfor %}
+                                            <tbody id="table-body">
+                                                
                                             </tbody>
                                         </table>
                                     </div>
@@ -63,12 +55,27 @@
             {% include 'footer.html' without context %}
         </div>
     </div>
-</body>
+{% endblock %}
 
+{% block scripts %}
 <script type="text/javascript">
-    data = "{{ data }}"
-    console.log(data)
+    data = {{ data|safe }};
     $(document).ready(function() {
+        let tr = document.getElementById("table-body");
+        for (var j = 0; j < data.length; j++) {
+            var row = tr.insertRow(j);
+            var cell0 = row.insertCell(0);
+            cell0.innerHTML = data[j]['problema'];
+            var cell1 = row.insertCell(1);
+            cell1.innerHTML = data[j]['idprob'];
+            var cell2 = row.insertCell(2);
+            cell2.innerHTML = data[j]['scor'];
+            var cell3 = row.insertCell(3);
+            cell3.innerHTML = data[j]['sursa'];
+            var cell4 = row.insertCell(4);
+            cell4.innerHTML = data[j]['data'];
+        }
+
         $('#datatables').DataTable({
             pagingType: "full_numbers",
             lengthMenu: [

@@ -127,7 +127,10 @@ def prob_user(nickname):
 
     data = db._getSurse(user, sess, "all")
 
-    
+    result = []
+    for i in data:
+        result.append(i.to_dict())
+
     sess.commit()
     username = ""
     if user.fullname:
@@ -137,14 +140,14 @@ def prob_user(nickname):
 
     if response["updating"]:
         if user.lock.locked():
-            return render_template('prob.html', probleme=data, updating=True, user=username)
+            return render_template('prob.html', data=result, updating=True, user=username)
         user.lock.acquire()
         thread = Thread(target=db.updateAndCommit, args=[nickname, "all"])
         thread.start()
 
-        return render_template('prob.html', probleme=data, updating=True, user=username)
+        return render_template('prob.html', data=result, updating=True, user=username)
 
-    return render_template('prob.html', probleme=data, updating=False, user=username)
+    return render_template('prob.html', data=result, updating=False, user=username)
 
 
 @app.route('/dashboard')
