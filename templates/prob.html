@@ -324,10 +324,12 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
+                            {% if updating %}
                             <div class="alert alert-info alert-with-icon" data-notify="container">
                                 <i class="material-icons" data-notify="icon">notifications</i>
                                 <span data-notify="message">Sursele se actualizeaza. Actualizarea poate dura intre 10 si 20 de secunde.</span>
                             </div>
+                            {% endif %}
                             <div class="card">
                                 <div class="card-header card-header-icon" data-background-color="purple">
                                     <i class="material-icons">assignment</i>
