@@ -154,19 +154,6 @@ def api_users(nickname, site):
     )
 
 
-@app.route('/search')
-def search():
-    user = request.args.get('user')
-    site = request.args.get('site')
-    if site not in SITES_ALL:
-        return render_template('404.html')
-    data = dbutils.getSurse(user, site)
-    if data is None:
-        return render_template('404.html')
-    data = sorted(data, key=sortProbleme_date)
-    return render_template('search.html', problems=data)
-
-
 def init():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = User.query.filter(User.nickname == "Tedyst").first()
