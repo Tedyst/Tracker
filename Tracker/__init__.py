@@ -1,1 +1,2 @@
-from Tracker.classes import SITES, SITES_ALL, Problema, User
+from flask import Flask
+app = Flask(__name__)

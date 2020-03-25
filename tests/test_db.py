@@ -64,5 +64,5 @@ def test_return_surse_db():
     db.addSurse(sess, [problema])
     sess.commit()
 
-    surse = db._getSurse(user, sess, "pbinfo")
+    surse = db.getSurse(user, sess, "pbinfo")
     assert problema == surse[0]

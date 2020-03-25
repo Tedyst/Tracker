@@ -1,12 +1,23 @@
 #!/usr/bin/python3
-from flask import Flask, render_template, request, Response
-import Tracker.db as db
-from Tracker.classes import sortProbleme_date, User, SITES, SITES_ALL
+from flask import render_template, request, Response
+from Tracker import app
+import Tracker.db as dbutils
+from Tracker.db import db
+from Tracker.db import sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
 from sqlalchemy.orm import scoped_session
-import time
-app = Flask(__name__)
+import sys
+
+app.config['SECRET_KEY'] = "asd"
+if "pytest" in sys.modules:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+
+db.init_app(app)
+db.create_all()
+
 PORT = 8080
 ERROR_JSON = {
     "message": None
@@ -31,7 +42,7 @@ def api_direct(user, site):
             mimetype='application/json'
         )
     # In cazul in care userul cerut nu exista
-    if not db.isTracked(user, site):
+    if not dbutils.isTracked(user, site):
         error = ERROR_JSON
         error["message"] = "This user is not tracked or is not registered in the database"
         return app.response_class(
@@ -39,7 +50,7 @@ def api_direct(user, site):
             status=404,
             mimetype='application/json'
         )
-    data = db.getSurseAPI(user, site)
+    data = dbutils.getSurse(user, site)
 
     # Pentru a creea un raspuns folosind JSON
     # @updating = daca va fi actualizat in viitorul apropiat
@@ -64,7 +75,7 @@ def api_direct(user, site):
 @app.route('/api/users/<user>')
 def api_getuser(user):
     # In cazul in care userul cerut nu exista
-    if not db.userExists(user):
+    if not dbutils.userExists(user):
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -76,7 +87,7 @@ def api_getuser(user):
     # @sites = usernameurile de pe siteuri
     # @id = id-ul din baza de date
     # @fullname = numele specificat de user
-    user = db.getUser(user)
+    user = dbutils.getUser(user)
     response = {
         "sites": {},
         "id": user.id,
@@ -105,8 +116,7 @@ def api_getuser(user):
 
 @app.route('/prob/<nickname>')
 def prob_user(nickname):
-    sess = scoped_session(db.Session)()
-    user = sess.query(User).filter(User.nickname == nickname).first()
+    user = User.query.filter(User.nickname == nickname).first()
 
     # In cazul in care userul cerut nu exista
     if user is None:
@@ -117,51 +127,26 @@ def prob_user(nickname):
         )
 
     # Get user's problems
-    data = db._getSurse(user, sess, "all")
+    data = dbutils.getSurse(user, "all")
     result = []
     for i in data:
         result.append(i.to_dict())
     result = json.dumps(result)
-    sess.commit()
+    db.session.commit()
 
-    if db.needsUpdate(nickname, "all"):
+    if dbutils.needsUpdate(nickname, "all"):
         # If it is locked, it means that the user is updating already
         if user.lock.locked():
             return render_template('prob.html', data=result, updating=True, user=user)
         # Start updating user
         user.lock.acquire()
-        thread = Thread(target=db.updateAndCommit, args=[nickname, "all"])
+        thread = Thread(target=dbutils.updateAndCommit, args=[nickname, "all"])
         thread.start()
 
         # Return old data to the user before we finish updating
         return render_template('prob.html', data=result, updating=True, user=user)
 
     return render_template('prob.html', data=result, updating=False, user=user)
-
-
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
-
-
-@app.route('/register')
-def register():
-    return render_template('register.html')
-
-
-@app.route('/settings')
-def settings():
-    return render_template('settings.html')
-
-
-@app.route('/charts')
-def charts():
-    return render_template('charts.html')
-
-
-@app.route('/login')
-def login():
-    return render_template('login.html')
 
 
 @app.route('/api/users/<nickname>/<site>')
@@ -175,9 +160,8 @@ def api_users(nickname, site):
             status=404,
             mimetype='application/json'
         )
-    sess = scoped_session(db.Session)()
     # In cazul in care userul cerut nu exista
-    if s.query(User).filter(User.nickname == nickname).first() is None:
+    if User.query.filter(User.nickname == nickname).first() is None:
         error = ERROR_JSON
         error["message"] = "This user does not exist"
         return app.response_class(
@@ -190,24 +174,24 @@ def api_users(nickname, site):
     # @updating = daca va fi actualizat in viitorul apropiat
     # @result = problemele userului de pe site-ul cerut
     response = {
-        "updating": db.needsUpdate(nickname, site),
+        "updating": dbutils.needsUpdate(nickname, site),
         "result": {}
     }
 
-    user = sess.query(User).filter(User.nickname == nickname).first()
+    user = User.query.filter(User.nickname == nickname).first()
 
-    data = db._getSurse(user, sess, site)
+    data = dbutils.getSurse(user, site)
     result = []
     for i in data:
         result.append(i.to_dict())
     response["result"] = result
-    sess.commit()
+    db.session.commit()
 
     if response["updating"]:
         if user.lock.locked():
             return Response(json.dumps(response),
-                        status=303,
-                        mimetype='application/json')
+                            status=303,
+                            mimetype='application/json')
         user.lock.acquire()
         thread = Thread(target=db.updateAndCommit, args=[nickname, site])
         thread.start()
@@ -230,21 +214,21 @@ def search():
     site = request.args.get('site')
     if site not in SITES_ALL:
         return render_template('404.html')
-    data = db.getSurse(user, site)
+    data = dbutils.getSurse(user, site)
     if data is None:
         return render_template('404.html')
     data = sorted(data, key=sortProbleme_date)
     return render_template('search.html', problems=data)
 
+
 def init():
-    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
-    s = db.Session()
-    user = s.query(User).filter(User.nickname == "Tedyst").first()
+    dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
+    user = User.query.filter(User.nickname == "Tedyst").first()
     user["pbinfo"] = "Tedyst"
     user["infoarena"] = "Tedyst"
     user["codeforces"] = "Tedyst"
-    s.commit()
-    s.close()
+    db.session.commit()
+
 
 init()
 
