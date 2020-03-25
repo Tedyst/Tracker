@@ -7,12 +7,14 @@ SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
 
-app = Flask(__name__, template_folder='../templates', static_folder="../static")
+app = Flask(__name__,
+            template_folder='../templates',
+            static_folder="../static")
 app.config['SECRET_KEY'] = "asd"
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 
 db = SQLAlchemy(app)
 

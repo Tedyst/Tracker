@@ -6,7 +6,6 @@ from Tracker import db, sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
 
-PORT = 8080
 ERROR_JSON = {
     "message": None
 }
