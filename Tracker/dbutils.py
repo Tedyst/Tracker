@@ -77,15 +77,6 @@ def updateUsername(user: User, username, site):
     updateSurse(user, site)
 
 
-def isTracked(username, site):
-    if site not in SITES:
-        return False
-    problema = Problema.query.filter(Problema.username == username).first()
-    if problema is None:
-        return False
-    return True
-
-
 def needsUpdate(user: User, site):
     if site == "all":
         for site in SITES:

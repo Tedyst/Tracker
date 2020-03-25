@@ -13,52 +13,6 @@ def index():
     return render_template('index.html', SITES=SITES_ALL)
 
 
-@app.route('/api/direct/<user>/<site>')
-def api_direct(user, site):
-    # In cazul in care site-ul cerut nu exista
-    if site not in SITES_ALL:
-        error = {
-            "message": None
-        }
-        error["message"] = "Site dosen't exist or is not tracked"
-        return app.response_class(
-            response=json.dumps(error),
-            status=404,
-            mimetype='application/json'
-        )
-    # In cazul in care userul cerut nu exista
-    if not dbutils.isTracked(user, site):
-        error = {
-            "message": None
-        }
-        error["message"] = "This user is not tracked or is not registered in the database"
-        return app.response_class(
-            response=json.dumps(error),
-            status=404,
-            mimetype='application/json'
-        )
-    data = dbutils.getSurse(user, site)
-
-    # Pentru a creea un raspuns folosind JSON
-    # @updating = daca va fi actualizat in viitorul apropiat
-    # @result = problemele userului de pe site-ul cerut
-    response = {
-        "updating": False,
-        "result": {}
-    }
-    result = []
-    for i in data:
-        result.append(i.to_dict())
-    response["result"] = result
-
-    # Pentru a specifica browserului ca este un raspuns JSON
-    return app.response_class(
-        response=json.dumps(response),
-        status=200,
-        mimetype='application/json'
-    )
-
-
 @app.route('/api/users/<user>')
 def api_getuser(user):
     # In cazul in care userul cerut nu exista
@@ -185,7 +139,7 @@ def api_users(nickname, site):
                             status=303,
                             mimetype='application/json')
         user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[nickname, site])
+        thread = Thread(target=dbutils.updateAndCommit, args=[user, site])
         thread.start()
 
         return Response(json.dumps(response),
