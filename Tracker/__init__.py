@@ -55,7 +55,8 @@ class User(db.Model):
 
     def avatar(self):
         email = str(self.email).lower().encode('utf-8')
-        return "https://www.gravatar.com/avatar/" + str(hashlib.md5(email).hexdigest())
+        userhex = str(hashlib.md5(email).hexdigest())
+        return "https://www.gravatar.com/avatar/" + userhex
 
     # def set_password(self, password):
     #     """Create hashed password."""

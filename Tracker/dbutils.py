@@ -2,9 +2,6 @@ import importlib
 from typing import Iterable
 import time
 from Tracker.utils import validUsername
-import json
-import threading
-import hashlib
 from Tracker import db, Problema, User, SITES, SITES_ALL
 
 
