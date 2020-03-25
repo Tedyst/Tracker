@@ -8,7 +8,6 @@ from Tracker.utils import validUsername
 from sqlalchemy.pool import StaticPool
 updating = {}
 
-
 # If running a test
 if "pytest" in sys.modules:
     engine = sqlalchemy.create_engine('sqlite:///:memory:', echo=False, poolclass=StaticPool)
