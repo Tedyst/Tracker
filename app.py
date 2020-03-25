@@ -154,6 +154,11 @@ def api_users(nickname, site):
     )
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
 def init():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = User.query.filter(User.nickname == "Tedyst").first()
