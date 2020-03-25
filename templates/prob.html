@@ -8,7 +8,9 @@
 {% endblock %}
 {% block content %}
 <div class="wrapper">
-        {% include 'sidebar.html' without context %}
+    {% with avatar = user.avatar() %}
+        {% include 'sidebar.html' %}
+    {% endwith %}
     <div class="main-panel">
         {% with title="Lista Surse" %}
             {% include 'navbar.html' %}
@@ -81,7 +83,14 @@
             var cell2 = row.insertCell(2);
             cell2.innerHTML = data[j]['scor'];
             var cell3 = row.insertCell(3);
-            cell3.innerHTML = data[j]['sursa'];
+
+            var a = document.createElement('a');
+            var link = document.createTextNode(data[j]['sursa']); 
+            a.title = data[j]['sursa'];
+            a.href = data[j]['url'];
+            a.innerHTML = data[j]['sursa'];
+            cell3.appendChild(a);
+
             var cell4 = row.insertCell(4);
             cell4.innerHTML = data[j]['data'];
         }

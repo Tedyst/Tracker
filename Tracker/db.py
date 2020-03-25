@@ -127,11 +127,11 @@ def userExists(nickname):
     return True
 
 
-def createUser(nickname, password):
+def createUser(nickname, password, email):
     s = Session()
     if userExists(nickname):
         return
-    user = User(nickname, password)
+    user = User(nickname, password, email)
     s.add(user)
     s.commit()
 

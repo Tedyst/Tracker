@@ -237,7 +237,7 @@ def search():
     return render_template('search.html', problems=data)
 
 def init():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     s = db.Session()
     user = s.query(User).filter(User.nickname == "Tedyst").first()
     user["pbinfo"] = "Tedyst"

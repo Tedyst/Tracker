@@ -3,7 +3,7 @@ from Tracker import Problema, User
 
 
 def test_pbinfo():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst", "pbinfo")
     surse = db.getSurse("Tedyst", "pbinfo")
     for problema in surse:
@@ -13,7 +13,7 @@ def test_pbinfo():
 
 
 def test_codeforces():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst", "codeforces")
     surse = db.getSurse("Tedyst", "codeforces")
     for problema in surse:
@@ -23,7 +23,7 @@ def test_codeforces():
 
 
 def test_infoarena():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst", "infoarena")
     surse = db.getSurse("Tedyst", "infoarena")
     for problema in surse:
@@ -33,28 +33,28 @@ def test_infoarena():
 
 
 def test_notfound_pbinfo():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst123", "pbinfo")
     user = db.getUser("Tedyst")
     assert user["pbinfo"] is None
 
 
 def test_notfound_infoarena():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst123", "infoarena")
     user = db.getUser("Tedyst")
     assert user["pbinfo"] is None
 
 
 def test_notfound_codeforces():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     db.updateUsername("Tedyst", "Tedyst123", "codeforces")
     user = db.getUser("Tedyst")
     assert user["pbinfo"] is None
 
 
 def test_return_surse_db():
-    db.createUser("Tedyst", "parola")
+    db.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     sess = db.Session()
     # Force set the username to skip updates
     user = sess.query(User).filter(User.nickname == "Tedyst").first()

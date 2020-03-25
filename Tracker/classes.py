@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 import json
 import threading
+import hashlib
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 sqlBase = declarative_base()
@@ -13,6 +14,7 @@ class User(sqlBase):
     fullname = Column(String(50))
     nickname = Column(String(50))
     password = Column(String(50))
+    email = Column(String(50))
     lock = threading.Lock()
 
     for i in SITES:
@@ -20,9 +22,10 @@ class User(sqlBase):
         vars()["last_" + i] = Column(Integer)
     del i
 
-    def __init__(self, nickname, password):
+    def __init__(self, nickname, password, email):
         self.nickname = nickname
         self.password = password
+        self.email = email
 
     # Te rog nu intreba
     # Am facut asta ca sa putem accesa usernameurile ca user["pbinfo"] si user.pbinfo
@@ -36,6 +39,9 @@ class User(sqlBase):
     def __setitem__(self, key, value):
         exec("self." + str(key) + " = '" + str(value) + "'")
 
+    def avatar(self):
+        email = str(self.email).lower().encode('utf-8')
+        return "https://www.gravatar.com/avatar/" + str(hashlib.md5(email).hexdigest())
 
 class Problema(sqlBase):
     __tablename__ = 'probleme'
@@ -64,6 +70,7 @@ class Problema(sqlBase):
         data["sursa"] = self.sursa
         data["problema"] = self.problema
         data["idprob"] = self.idprob
+        data["url"] = self.url
         data["scor"] = self.scor
         data["data"] = self.data
         data["username"] = self.username
@@ -74,6 +81,7 @@ class Problema(sqlBase):
         data["sursa"] = self.sursa
         data["problema"] = self.problema
         data["idprob"] = self.idprob
+        data["url"] = self.url
         data["scor"] = self.scor
         data["data"] = self.data
         data["username"] = self.username
