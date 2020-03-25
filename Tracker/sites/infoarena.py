@@ -68,13 +68,16 @@ def _getUser(idparent, user, page) -> [Problema]:
             scor = scor.replace("Evaluare completa: ", "")
             scor = int(scor.replace("puncte", ""))
 
+        url = "https://www.infoarena.ro/" + problema.contents[2].contents[0].attrs['href']
+
         problema = Problema(idparent,
                             "infoarena",
                             nume,  # nume
                             nume,  # id
                             scor,
                             data,
-                            user)
+                            user,
+                            url)
         result.append(problema)
 
     return result

@@ -102,6 +102,36 @@ def api_getuser(user):
     )
 
 
+@app.route('/prob/<nume>')
+def prob(nume):
+    return render_template('prob.html', probleme=db.getSurse(nume, "all"))
+
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+
+@app.route('/charts')
+def charts():
+    return render_template('charts.html')
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
     # In cazul in care site-ul cerut nu exista

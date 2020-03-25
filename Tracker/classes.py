@@ -47,8 +47,9 @@ class Problema(sqlBase):
     idprob = Column(String)
     scor = Column(String)
     data = Column(Integer)
+    url = Column(String)
 
-    def __init__(self, iduser, sursa, problema, idprob, scor, data, username):
+    def __init__(self, iduser, sursa, problema, idprob, scor, data, username, url):
         self.iduser = iduser
         self.sursa = sursa
         self.problema = problema
@@ -56,6 +57,7 @@ class Problema(sqlBase):
         self.scor = scor
         self.data = data
         self.username = username
+        self.url = url
 
     def to_json(self):
         data = {}
