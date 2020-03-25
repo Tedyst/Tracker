@@ -1,14 +1,10 @@
 #!/usr/bin/python3
-from flask import render_template, request, Response
-from Tracker import app
-import Tracker.dbutils as dbutils
-from Tracker import db, sortProbleme_date, User, SITES, SITES_ALL
 import json
 from threading import Thread
+from flask import render_template, request, Response
 
-ERROR_JSON = {
-    "message": None
-}
+from Tracker import app, db, sortProbleme_date, User, SITES, SITES_ALL
+import Tracker.dbutils as dbutils
 
 
 @app.route('/')
@@ -21,7 +17,9 @@ def index():
 def api_direct(user, site):
     # In cazul in care site-ul cerut nu exista
     if site not in SITES_ALL:
-        error = ERROR_JSON
+        error = {
+            "message": None
+        }
         error["message"] = "Site dosen't exist or is not tracked"
         return app.response_class(
             response=json.dumps(error),
@@ -30,7 +28,9 @@ def api_direct(user, site):
         )
     # In cazul in care userul cerut nu exista
     if not dbutils.isTracked(user, site):
-        error = ERROR_JSON
+        error = {
+            "message": None
+        }
         error["message"] = "This user is not tracked or is not registered in the database"
         return app.response_class(
             response=json.dumps(error),
@@ -63,7 +63,9 @@ def api_direct(user, site):
 def api_getuser(user):
     # In cazul in care userul cerut nu exista
     if not dbutils.userExists(user):
-        error = ERROR_JSON
+        error = {
+            "message": None
+        }
         error["message"] = "This user does not exist"
         return app.response_class(
             response=json.dumps(error),
@@ -109,8 +111,7 @@ def prob_user(nickname):
     if user is None:
         return app.response_class(
             response=render_template('404.html'),
-            status=404,
-            mimetype='application/json'
+            status=404
         )
 
     # Get user's problems
@@ -140,7 +141,9 @@ def prob_user(nickname):
 def api_users(nickname, site):
     # In cazul in care site-ul cerut nu exista
     if site not in SITES_ALL:
-        error = ERROR_JSON
+        error = {
+            "message": None
+        }
         error["message"] = "Site dosen't exist or is not tracked"
         return app.response_class(
             response=json.dumps(error),
@@ -149,7 +152,9 @@ def api_users(nickname, site):
         )
     # In cazul in care userul cerut nu exista
     if User.query.filter(User.nickname == nickname).first() is None:
-        error = ERROR_JSON
+        error = {
+            "message": None
+        }
         error["message"] = "This user does not exist"
         return app.response_class(
             response=json.dumps(error),
@@ -180,7 +185,7 @@ def api_users(nickname, site):
                             status=303,
                             mimetype='application/json')
         user.lock.acquire()
-        thread = Thread(target=db.updateAndCommit, args=[nickname, site])
+        thread = Thread(target=dbutils.updateAndCommit, args=[nickname, site])
         thread.start()
 
         return Response(json.dumps(response),
