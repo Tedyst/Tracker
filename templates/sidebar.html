@@ -110,6 +110,15 @@
 
             {% if current_user.is_authenticated %}
                 <li>
+                    <a href="{{ url_for('settings') }}">
+                    <i class="material-icons">settings</i>
+                    <p>Settings</p>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if current_user.is_authenticated %}
+                <li>
                     <a href="{{ url_for('logout') }}">
                     <i class="material-icons">fingerprint</i>
                     <p>Logout</p>

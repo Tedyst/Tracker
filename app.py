@@ -101,12 +101,34 @@ def prob_user(nickname):
                            user=user)
 
 
-@app.route('/prob')
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            return render_template('settings.html', updated=False)
+        return redirect(url_for('index'))
+    data = request.form
+    for i in SITES:
+        try:
+            dbutils.updateUsername(current_user, data[i], i)
+        except KeyError:
+            pass
+    if current_user.lock.locked():
+        return render_template('settings.html', updated=True)
+        # Start updating user
+        current_user.lock.acquire()
+        thread = Thread(target=dbutils.updateAndCommit, args=[current_user,
+                                                              "all"])
+        thread.start()
+    return render_template('settings.html', updated=True)
+
+
+@app.route('/settings', methods=['GET', 'POST'])
 def prob():
     if current_user.is_authenticated:
         return redirect(url_for('prob_user', nickname=current_user.nickname))
     return redirect(url_for('index'))
-
 
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
@@ -185,13 +207,14 @@ def login():
         try:
             if not data['email'] or not data['password']:
                 return render_template('login.html', failedlogin=True)
-            if not data['remember']:
-                return render_template('login.html', failedlogin=True)
         except KeyError:
-            return render_template('register.html')
+            return render_template('login.html')
         remember = False
-        if data['remember'] == "on":
-            remember = True
+        try:
+            if data['remember'] == 'on':
+                remember = True
+        except KeyError:
+            pass
         user = User.query.filter(User.email == data['email']).first()
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
