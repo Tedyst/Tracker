@@ -62,14 +62,14 @@
             {% if current_user.is_authenticated %}
                 {% if page == 'prob' %}
                     <li class="active">
-                        <a href="{{ url_for('prob_user', nickname='Tedyst') }}">
+                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
                             <i class="material-icons">dashboard</i>
                             <p>Problemele mele</p>
                         </a>
                     </li>
                 {% else %}
                     <li>
-                        <a href="{{ url_for('prob_user', nickname='Tedyst') }}">
+                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
                             <i class="material-icons">dashboard</i>
                             <p>Problemele mele</p>
                         </a>
