@@ -3,6 +3,7 @@ import sys
 from flask_sqlalchemy import SQLAlchemy
 import threading
 import hashlib
+from sqlalchemy.orm.attributes import set_attribute, flag_modified
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -11,6 +12,7 @@ app = Flask(__name__,
             template_folder='../templates',
             static_folder="../static")
 app.config['SECRET_KEY'] = "asd"
+app.config['SQLALCHEMY_ECHO'] = True
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
@@ -50,7 +52,9 @@ class User(db.Model):
 
     def __setitem__(self, key, value):
         db.session.commit()
-        exec("self." + str(key) + " = '" + str(value) + "'")
+        set_attribute(self, key, value)
+        flag_modified(self, key)
+        db.session.add(self)
         db.session.commit()
 
     def avatar(self):
