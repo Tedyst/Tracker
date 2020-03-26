@@ -1,7 +1,11 @@
 ﻿{% extends 'base.html' %}
 
+{% block title %} Register {% endblock %}
+
 {% block content %}
-    {% include 'navbar_login.html' %}
+    {% with page='register' %}
+        {% include 'navbar_login.html' %}
+    {% endwith %}
     <div class="wrapper wrapper-full-page">
         <div class="full-page login-page" filter-color="black" data-image="{{ url_for('static', filename='img/login.jpg') }}">
             <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->

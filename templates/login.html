@@ -1,19 +1,28 @@
 ﻿{% extends 'base.html' %}
 
+{% block title %} Login {% endblock %}
+
 {% block content %}
-    {% include 'navbar_login.html' %}
+    {% with page='login' %}
+        {% include 'navbar_login.html' %}
+    {% endwith %}
     <div class="wrapper wrapper-full-page">
         <div class="full-page login-page" filter-color="black" data-image="{{ url_for('static', filename='img/login.jpg') }}">
-            <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
             <div class="content">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
                             <form method="post" action="{{ url_for('login') }}">
                                 <div class="card card-login card-hidden">
-                                    <div class="card-header text-center" data-background-color="rose">
-                                        <h4 class="card-title">Login</h4>
-                                    </div>
+                                    {% if failedlogin %}
+                                        <div class="card-header text-center" data-background-color="rose">
+                                            <h4 class="card-title">User sau parola incorecte</h4>
+                                        </div>
+                                    {% else %}
+                                        <div class="card-header text-center" data-background-color="rose">
+                                            <h4 class="card-title">Login</h4>
+                                        </div>
+                                    {% endif %}
                                     <p class="category text-center">
                                         Or Be Classical
                                     </p>
@@ -23,8 +32,8 @@
                                                 <i class="material-icons">email</i>
                                             </span>
                                             <div class="form-group label-floating">
-                                                <label class="control-label">Email address</label>
-                                                <input type="email" class="form-control" id="email" name="email">
+                                                <label class="control-label">Email address or Username</label>
+                                                <input type="text" class="form-control" id="email" name="email">
                                             </div>
                                         </div>
                                         <div class="input-group">
@@ -46,41 +55,6 @@
                     </div>
                 </div>
             </div>
-            <footer class="footer">
-                <div class="container">
-                    <nav class="pull-left">
-                        <ul>
-                            <li>
-                                <a href="#">
-                                    Home
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Company
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Portfolio
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    Blog
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    <p class="copyright pull-right">
-                        &copy;
-                        <script>
-                            document.write(new Date().getFullYear())
-                        </script>
-                        <a href="http://www.creative-tim.com/">Creative Tim</a>, made with love for a better web
-                    </p>
-                </div>
-            </footer>
         </div>
     </div>
 {% endblock %}

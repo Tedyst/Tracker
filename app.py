@@ -179,20 +179,20 @@ def page_not_found(e):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return render_template('login.html', failedlogin=False)
     elif request.method == 'POST':
         data = request.form
         if not data['email'] or not data['password']:
-            return render_template('login.html')
+            return render_template('login.html', failedlogin=True)
         user = User.query.filter(User.email == data['email']).first()
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
             if user is None:
-                return render_template('login.html')
+                return render_template('login.html', failedlogin=True)
         if user.check_password(data['password']):
             login_user(user)
-            return render_template('index.html')
-        return render_template('login.html')
+            return redirect(url_for('index'))
+        return render_template('login.html', failedlogin=True)
 
 
 @app.route('/register', methods=['GET', 'POST'])

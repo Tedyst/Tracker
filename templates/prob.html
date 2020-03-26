@@ -1,4 +1,5 @@
 ﻿{% extends "base.html" %}
+
 {% block title %}
     {% if user.fullname %}
         {{ user.fullname }}
@@ -6,6 +7,7 @@
         {{ user.nickname }}
     {% endif %}
 {% endblock %}
+
 {% block content %}
 <div class="wrapper">
     {% with page='prob' %}
