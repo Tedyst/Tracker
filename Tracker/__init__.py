@@ -5,6 +5,8 @@ import threading
 import hashlib
 from sqlalchemy.orm.attributes import set_attribute, flag_modified
 import json
+from flask_login import LoginManager
+from werkzeug.security import check_password_hash, generate_password_hash
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -12,7 +14,7 @@ SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 app = Flask(__name__,
             template_folder='../templates',
             static_folder="../static")
-app.config['SECRET_KEY'] = "asd"
+app.config['SECRET_KEY'] = b",\x93e9\xe9y'P}>\x92\x8f\xc4\x80\xa9\x88"
 app.config['SQLALCHEMY_ECHO'] = False
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
@@ -20,7 +22,7 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 
 db = SQLAlchemy(app)
-
+login_manager = LoginManager(app)
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -38,7 +40,7 @@ class User(db.Model):
 
     def __init__(self, nickname, password, email):
         self.nickname = nickname
-        self.password = password
+        self.set_password(password)
         self.email = email
 
     # Te rog nu intreba
@@ -64,13 +66,25 @@ class User(db.Model):
         userhex = str(hashlib.md5(email).hexdigest())
         return "https://www.gravatar.com/avatar/" + userhex
 
-    # def set_password(self, password):
-    #     """Create hashed password."""
-    #     self.password = generate_password_hash(password, method='sha256')
+    def set_password(self, password):
+        """Create hashed password."""
+        self.password = generate_password_hash(password, method='sha256')
 
-    # def check_password(self, password):
-    #     """Check hashed password."""
-    #     return check_password_hash(self.password, password)
+    def check_password(self, password):
+        """Check hashed password."""
+        return check_password_hash(self.password, password)
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def is_active(self):
+        return True
+
+    def get_id(self):
+        return self.id
 
 
 class Problema(db.Model):
@@ -124,6 +138,11 @@ class Problema(db.Model):
         data["data"] = self.data
         data["username"] = self.username
         return data
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter(User.id == user_id).first()
 
 
 def sortProbleme_date(self):

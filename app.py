@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 import json
 from threading import Thread
-from flask import render_template, Response
+from flask import render_template, Response, request, redirect, url_for
 
 from Tracker import app, db, User, SITES, SITES_ALL
 import Tracker.dbutils as dbutils
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 @app.route('/')
-@app.route('/index')
 def index():
     return render_template('index.html', SITES=SITES_ALL)
 
@@ -101,6 +101,13 @@ def prob_user(nickname):
                            user=user)
 
 
+@app.route('/prob')
+def prob():
+    if current_user.is_authenticated:
+        return redirect(url_for('prob_user', nickname=current_user.nickname))
+    return redirect(url_for('index'))
+
+
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
     # In cazul in care site-ul cerut nu exista
@@ -167,6 +174,32 @@ def api_users(nickname, site):
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        data = request.form
+        if not data['email'] or not data['password']:
+            return render_template('login.html')
+        user = User.query.filter(User.email == data['email']).first()
+        if user is None:
+            user = User.query.filter(User.nickname == data['email']).first()
+            if user is None:
+                return render_template('login.html')
+        if user.check_password(data['password']):
+            login_user(user)
+            return render_template('index.html')
+        return render_template('login.html')
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 
 def init():
