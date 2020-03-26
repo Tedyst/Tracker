@@ -36,7 +36,8 @@ def api_getuser(user):
         "id": user.id,
         "fullname": user.fullname
     }
-    # Pentru a adauga fiecare username la fiecare site + data ultimei actualizari
+    # Pentru a adauga la fiecare site
+    # username si data ultimei actualizari
     for site in SITES:
         if user[site] is None:
             response["sites"][site] = {
@@ -79,16 +80,25 @@ def prob_user(nickname):
     if dbutils.needsUpdate(user, "all"):
         # If it is locked, it means that the user is updating already
         if user.lock.locked():
-            return render_template('prob.html', data=result, updating=True, user=user)
+            return render_template('prob.html',
+                                   data=result,
+                                   updating=True,
+                                   user=user)
         # Start updating user
         user.lock.acquire()
         thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
         thread.start()
 
         # Return old data to the user before we finish updating
-        return render_template('prob.html', data=result, updating=True, user=user)
+        return render_template('prob.html',
+                               data=result,
+                               updating=True,
+                               user=user)
 
-    return render_template('prob.html', data=result, updating=False, user=user)
+    return render_template('prob.html',
+                           data=result,
+                           updating=False,
+                           user=user)
 
 
 @app.route('/api/users/<nickname>/<site>')

@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import threading
 import hashlib
 from sqlalchemy.orm.attributes import set_attribute, flag_modified
+import json
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -41,7 +42,8 @@ class User(db.Model):
         self.email = email
 
     # Te rog nu intreba
-    # Am facut asta ca sa putem accesa usernameurile ca user["pbinfo"] si user.pbinfo
+    # Am facut asta ca sa putem accesa usernameurile
+    # ca user["pbinfo"] si user.pbinfo
     def __getitem__(self, key):
         db.session.commit()
         try:
@@ -83,7 +85,15 @@ class Problema(db.Model):
     data = db.Column(db.Integer)
     url = db.Column(db.String)
 
-    def __init__(self, iduser, sursa, problema, idprob, scor, data, username, url):
+    def __init__(self,
+                 iduser,
+                 sursa,
+                 problema,
+                 idprob,
+                 scor,
+                 data,
+                 username,
+                 url):
         self.iduser = iduser
         self.sursa = sursa
         self.problema = problema
@@ -118,5 +128,6 @@ class Problema(db.Model):
 
 def sortProbleme_date(self):
     return self.data
+
 
 db.create_all()

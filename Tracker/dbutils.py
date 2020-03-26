@@ -85,11 +85,13 @@ def needsUpdate(user: User, site):
             if user[site] is not None:
                 if user["last_" + site] is None:
                     return True
-                elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+                # The DB was updated max 10 mins ago
+                elif time.time() - user["last_" + site] > 600:
                     return True
     if user[site] is not None:
         if user["last_" + site] is None:
             return True
-        elif time.time() - user["last_" + site] > 600:  # The DB was updated max 10 mins ago
+        # The DB was updated max 10 mins ago
+        elif time.time() - user["last_" + site] > 600:
             return True
     return False
