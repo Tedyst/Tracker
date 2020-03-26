@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
 <div class="wrapper">
-    {% with avatar = user.avatar(), page="prob" %}
+    {% with page='prob' %}
         {% include 'sidebar.html' %}
     {% endwith %}
     <div class="main-panel">

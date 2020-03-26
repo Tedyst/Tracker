@@ -64,6 +64,7 @@ def createUser(nickname, password, email):
     user = User(nickname, password, email)
     db.session.add(user)
     db.session.commit()
+    return user
 
 
 def getUser(nickname):

@@ -12,15 +12,9 @@
 {% endblock %}
 {% block content %}
 <div class="wrapper">
-    {% if not current_user.is_authenticated %}
-        {% with avatar = "https://www.gravatar.com/avatar/16c849fbf6376ca3e613b72ba33dc5ea", page='index' %}
-            {% include 'sidebar.html' %}
-        {% endwith %}
-    {% else %}
-        {% with avatar = current_user.avatar() %}
-            {% include 'sidebar.html' %}
-        {% endwith %}
-    {% endif %}
+    {% with page='index' %}
+        {% include 'sidebar.html' %}
+    {% endwith %}
     <div class="main-panel">
         {% with title="Pagina Principala" %}
             {% include 'navbar.html' %}

@@ -2,7 +2,11 @@
     <div class="sidebar-wrapper">
         <div class="user">
             <div class="photo">
-                <img src="{{ avatar }}" />
+                {% if not current_user.is_authenticated %}
+                    <img src="https://www.gravatar.com/avatar/16c849fbf6376ca3e613b72ba33dc5ea" />
+                {% else %}
+                    <img src="{{ current_user.avatar() }}" />
+                {% endif %}
             </div>
             {% if current_user.is_authenticated %}
             <div class="info">
