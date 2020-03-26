@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import json
 from threading import Thread
-from flask import render_template, request, Response
+from flask import render_template, Response
 
-from Tracker import app, db, sortProbleme_date, User, SITES, SITES_ALL
+from Tracker import app, db, User, SITES, SITES_ALL
 import Tracker.dbutils as dbutils
 
 
