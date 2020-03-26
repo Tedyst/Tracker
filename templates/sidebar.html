@@ -109,7 +109,11 @@
             </li> -->
 
             {% if current_user.is_authenticated %}
+                {% if page == 'settings' %}
+                <li class="active">
+                {% else %}
                 <li>
+                {% endif %}
                     <a href="{{ url_for('settings') }}">
                     <i class="material-icons">settings</i>
                     <p>Settings</p>
