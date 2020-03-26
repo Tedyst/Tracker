@@ -182,15 +182,23 @@ def login():
         return render_template('login.html', failedlogin=False)
     elif request.method == 'POST':
         data = request.form
-        if not data['email'] or not data['password']:
-            return render_template('login.html', failedlogin=True)
+        try:
+            if not data['email'] or not data['password']:
+                return render_template('login.html', failedlogin=True)
+            if not data['remember']:
+                return render_template('login.html', failedlogin=True)
+        except KeyError:
+            return render_template('register.html')
+        remember = False
+        if data['remember'] == "on":
+            remember = True
         user = User.query.filter(User.email == data['email']).first()
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
             if user is None:
                 return render_template('login.html', failedlogin=True)
         if user.check_password(data['password']):
-            login_user(user)
+            login_user(user, remember=remember)
             return redirect(url_for('index'))
         return render_template('login.html', failedlogin=True)
 
