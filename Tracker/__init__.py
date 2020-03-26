@@ -12,7 +12,7 @@ app = Flask(__name__,
             template_folder='../templates',
             static_folder="../static")
 app.config['SECRET_KEY'] = "asd"
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:

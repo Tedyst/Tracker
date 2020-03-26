@@ -2,6 +2,7 @@ import importlib
 from typing import Iterable
 import time
 from Tracker import db, Problema, User, SITES, SITES_ALL
+from Tracker.utils import validUsername
 
 
 def getSurse(user: User, site) -> Iterable[Problema]:
@@ -66,12 +67,13 @@ def createUser(nickname, password, email):
 
 
 def getUser(nickname):
-    user = User.query.filter(User.nickname == nickname).first()
-    return user
+    return User.query.filter(User.nickname == nickname).first()
 
 
 def updateUsername(user: User, username, site):
     if site not in SITES:
+        return
+    if not validUsername(username, site):
         return
     user[site] = username
     updateSurse(user, site)
