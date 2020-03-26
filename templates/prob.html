@@ -71,7 +71,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript">
+<script defer type="text/javascript">
     data = {{ data|safe }};
     $(document).ready(function() {
         let tr = document.getElementById("table-body");
