@@ -24,6 +24,7 @@ else:
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
