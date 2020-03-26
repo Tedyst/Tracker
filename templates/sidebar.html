@@ -40,6 +40,25 @@
                     </a>
                 </li>
             {% endif %}
+
+            {% if not current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('login') }}">
+                    <i class="material-icons">fingerprint</i>
+                    <p>Login</p>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if not current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('register') }}">
+                    <i class="material-icons">person_add</i>
+                    <p>Register</p>
+                    </a>
+                </li>
+            {% endif %}
+
             {% if current_user.is_authenticated %}
                 {% if page == 'prob' %}
                     <li class="active">
@@ -88,6 +107,15 @@
                     </ul>
                 </div>
             </li>
+
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('logout') }}">
+                    <i class="material-icons">fingerprint</i>
+                    <p>Logout</p>
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>
