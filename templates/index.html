@@ -11,6 +11,8 @@
     {% endif %}
 {% endblock %}
 {% block content %}
+
+
 <div class="wrapper">
     {% with page='index' %}
         {% include 'sidebar.html' %}
@@ -20,7 +22,24 @@
             {% include 'navbar.html' %}
         {% endwith %}
         <div class="content">
+
             <div class="container-fluid">
+        {%if first_time%}
+            {%if first_time == True%}
+            <div class="alert alert-info alert-with-icon" data-notify="container">
+                <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
+                <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                    <i class="material-icons">close</i>
+                </button>
+                <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
+                <span data-notify="message">
+                    Pentru a putea sa-ti vezi sursele, te rugam introdu-ti username-urile de pe site-urile
+                    listate in meniul  "Settings"
+                </span>
+            </div>
+
+            {%endif%}
+        {%endif%}
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">

@@ -104,24 +104,50 @@ def prob_user(nickname):
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    site_names = {}
     if request.method == 'GET':
         if current_user.is_authenticated:
-            return render_template('settings.html', updated=False)
+            #Ia numele user-ului de pe site-uri
+            user = dbutils.getUser(current_user.nickname)
+            for site in SITES:
+                if user[site] is None:
+                    site_names[site] = "None set"
+                else:
+                    site_names[site] = user[site]
+                
+            #site_names = json.dumps(site_names)
+            return render_template('settings.html', data = site_names, edit = False)
         return redirect(url_for('index'))
+    
+   
     data = request.form
     for i in SITES:
+        try:
+            site_names[i] = data[i]
+        except KeyError:
+            pass
+
         try:
             dbutils.updateUsername(current_user, data[i], i)
         except KeyError:
             pass
     if current_user.lock.locked():
         return render_template('settings.html', updated=True)
+        
         # Start updating user
         current_user.lock.acquire()
         thread = Thread(target=dbutils.updateAndCommit, args=[current_user,
-                                                              "all"])
+                                                              "all"], data= site_names)
         thread.start()
-    return render_template('settings.html', updated=True)
+    
+    user = dbutils.getUser(current_user.nickname)
+    for site in SITES:
+        if user[site] is None:
+            site_names[site] = "None set"
+        else:
+            site_names[site] = user[site]
+    
+    return render_template('settings.html', updated=True, data=site_names)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -243,7 +269,7 @@ def register():
         if user is None:
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
-            return render_template('index.html')
+            return render_template('index.html', first_time=True)
         return render_template('register.html')
 
 
@@ -253,17 +279,5 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-def init():
-    dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
-    user = User.query.filter(User.nickname == "Tedyst").first()
-    user["pbinfo"] = "Tedyst"
-    user["infoarena"] = "Tedyst"
-    user["codeforces"] = "Tedyst"
-    db.session.commit()
-
-
-init()
-
 if __name__ == "__main__":
-    app.run(threaded=True)
+    app.run(threaded=True, debug=True)
