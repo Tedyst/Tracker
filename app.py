@@ -107,19 +107,18 @@ def settings():
     site_names = {}
     if request.method == 'GET':
         if current_user.is_authenticated:
-            #Ia numele user-ului de pe site-uri
+            # Ia numele user-ului de pe site-uri
             user = dbutils.getUser(current_user.nickname)
             for site in SITES:
                 if user[site] is None:
                     site_names[site] = "None set"
                 else:
                     site_names[site] = user[site]
-                
-            #site_names = json.dumps(site_names)
-            return render_template('settings.html', data = site_names, edit = False)
+
+            # site_names = json.dumps(site_names)
+            return render_template('settings.html', data=site_names, edit=False)
         return redirect(url_for('index'))
-    
-   
+
     data = request.form
     for i in SITES:
         try:
@@ -133,20 +132,20 @@ def settings():
             pass
     if current_user.lock.locked():
         return render_template('settings.html', updated=True)
-        
+
         # Start updating user
         current_user.lock.acquire()
         thread = Thread(target=dbutils.updateAndCommit, args=[current_user,
-                                                              "all"], data= site_names)
+                                                              "all"], data=site_names)
         thread.start()
-    
+
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
         if user[site] is None:
             site_names[site] = "None set"
         else:
             site_names[site] = user[site]
-    
+
     return render_template('settings.html', updated=True, data=site_names)
 
 

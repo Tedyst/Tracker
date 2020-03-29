@@ -37,7 +37,11 @@
                                         <div class="col-md-2">
                                             <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
                                                 {% for site in data %}
+                                                {% if loop.index == 1 %}
+                                                <li class="nav-item active">
+                                                {% else %}
                                                 <li class="nav-item">
+                                                {% endif %}
                                                     <a class="nav-link" data-toggle="tab" href="#link{{3+loop.index}}" role="tablist">
                                                         {{site}}
                                                     </a>
@@ -48,7 +52,11 @@
                                         <div class="col-md-4">
                                             <div class="tab-content">
                                                 {%for site in data%}
+                                                {% if loop.index == 1 %}
+                                                    <div id="link{{3+loop.index}}" class="tab-pane active">
+                                                {% else %}
                                                     <div id="link{{3+loop.index}}" class="tab-pane">
+                                                {% endif %}
                                                         <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate" >
                                                             <div class="row">
                                                                 <label class="col-sm-6 col-form-label">Current Username:</label>
