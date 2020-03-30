@@ -2,6 +2,7 @@
 import json
 from threading import Thread
 from flask import render_template, Response, request, redirect, url_for
+from datetime import datetime, timedelta
 
 from Tracker import app, db, User, SITES, SITES_ALL
 import Tracker.dbutils as dbutils
@@ -241,10 +242,11 @@ def api_users_calendar(nickname):
     data = dbutils.getSurse(user, "all")
     result = {}
     for i in data:
+        timp = int(datetime.fromtimestamp(i.data).replace(hour=0, minute=0, second=0).timestamp())
         try:
-            result[i.data] += 1
+            result[timp] += 1
         except Exception:
-            result[i.data] = 1
+            result[timp] = 1
 
     db.session.commit()
 
