@@ -243,7 +243,6 @@ def api_users_calendar(nickname):
     # @result = problemele userului de pe site-ul cerut
 
     data = dbutils.getSurse(user, "all")
-    print(data[0].problema)
     mem = []
     result = {}
     for p,i in enumerate(data):
