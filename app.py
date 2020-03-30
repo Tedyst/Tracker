@@ -245,12 +245,12 @@ def api_users_calendar(nickname):
     data = dbutils.getSurse(user, "all")
     mem = []
     result = {}
-    for p,i in enumerate(data):
+    for i in data:
         timp = int(datetime.fromtimestamp(i.data).replace(hour=0, minute=0, second=0).timestamp())
         try:
             if i.idprob not in mem:
                 result[timp] += 1
-                mem.append(i.idprob)   
+                mem.append(i.idprob)
         except Exception:
             result[timp] = 1
     db.session.commit()
