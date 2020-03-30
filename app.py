@@ -243,14 +243,17 @@ def api_users_calendar(nickname):
     # @result = problemele userului de pe site-ul cerut
 
     data = dbutils.getSurse(user, "all")
+    print(data[0].problema)
+    mem = []
     result = {}
-    for i in data:
+    for p,i in enumerate(data):
         timp = int(datetime.fromtimestamp(i.data).replace(hour=0, minute=0, second=0).timestamp())
         try:
-            result[timp] += 1
+            if i.idprob not in mem:
+                result[timp] += 1
+                mem.append(i.idprob)   
         except Exception:
             result[timp] = 1
-
     db.session.commit()
 
     if dbutils.needsUpdate(user, "all"):

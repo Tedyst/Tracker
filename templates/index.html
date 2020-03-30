@@ -41,7 +41,7 @@
                     <div class="col-md-12">
                         {%if current_user.is_authenticated%}
                         <div class="card">
-                            <div class="card-header card-header-icon" data-background-color="green">
+                            <div class="card-header card-header-icon " data-background-color="green">
                                 <i class="material-icons">language</i>
                             </div>
                             <div class="card-content">
@@ -53,6 +53,33 @@
                                     </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header card-header-icon card-header-info" data-background-color="red">
+                                        <div class="card-icon">
+                                            <i class="material-icons">show_chart</i>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="card-title">Un grafic</div>
+                                            <div id="colouredRoundedChart" class="ct-chart"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header card-header-icon" data-background-color="red">
+                                        <i class="material-icons">show_chart</i>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3 class="card-title">Un grafic</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         {%endif%}
                     </div>
                 </div>
@@ -61,27 +88,52 @@
 {% block scripts %}
 <script type="text/javascript">
     var cal1 = new CalHeatMap();
+    
     var up = new Date();
     var year = up.getFullYear();
     var month = up.getMonth()-3;
     var dwn = new Date(year,month);
+    
     cal1.init({
         itemSelector: "#cal-heatmap1",
+        itemName: ["problem", "problems"],
         domain : "month",
         subDomain : "day",
         cellSize: 45,
         subDomainTextFormat: "%d",
         cellPadding: 10,
+        label:{
+            height:45
+        },
         start: dwn,
         minDate:dwn,
         maxDate:up,
         range:4,
         rowLimit:5,
         domainGutter: 26,
-        displayLegend: false,
+        legend: [1,3,5],
+        displayLegend: true,
         highlight: "now",
-        data: "{{ url_for('api_users_calendar', nickname=current_user.nickname) }}"
+        data: "{{ url_for('api_users_calendar', nickname=current_user.nickname) }}",
+        onClick: function(date, nb) {
+        
+        }
     });
+</script>
+<script type="text/javascript">
+    new Chartist.Line('.ct-chart', {
+  labels: ['a','b','c','d','e'],
+  series: [
+    [12, 9, 7, 8, 5],
+    [2, 1, 3.5, 7, 3],
+    [1, 3, 4, 5, 6]
+  ]
+}, {
+  fullWidth: true,
+  chartPadding: {
+    right: 40
+  }
+});
 </script>
 <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
 <script type="text/javascript">
