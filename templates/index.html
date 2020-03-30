@@ -36,7 +36,7 @@
                     listate in meniul  "Settings"
                 </span>
             </div>
-        {%endif%}
+        {% else %}
                 <div class="row">
                     <div class="col-md-12">
                         {%if current_user.is_authenticated%}
@@ -64,26 +64,27 @@
                                 </div>
                             </div>
                             <div class="card-content">
-                                <h3 class="card-title">Un grafic</div>
-                                <div id="colouredRoundedChart" class="ct-chart"></div>
+                                <h3 class="card-title">Un grafic
                             </div>
+                            <div id="colouredRoundedChart" class="ct-chart"></div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header card-header-icon" data-background-color="red">
-                                    <i class="material-icons">show_chart</i>
-                                </div>
-                                <div class="card-content">
-                                    <h3 class="card-title">Un grafic
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        {%endif%}
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header card-header-icon" data-background-color="red">
+                                <i class="material-icons">show_chart</i>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Un grafic
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        {%endif%}
+            </div>
+        </div>
 {% endblock %}
 
 {% block scripts %}
