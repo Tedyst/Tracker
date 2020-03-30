@@ -11,7 +11,10 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 @app.route('/')
 def index():
-    return render_template('index.html', SITES=SITES_ALL)
+    if current_user.is_authenticated:
+        return render_template('index.html', SITES=SITES_ALL)
+    else:
+        return render_template('login.html')
 
 
 @app.route('/api/users/<user>')
