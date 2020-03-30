@@ -155,6 +155,7 @@ def prob():
         return redirect(url_for('prob_user', nickname=current_user.nickname))
     return redirect(url_for('index'))
 
+
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
     # In cazul in care site-ul cerut nu exista
@@ -213,6 +214,56 @@ def api_users(nickname, site):
     # Pentru a specifica browserului ca este un raspuns JSON
     return app.response_class(
         response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/api/calendar/<nickname>')
+def api_users_calendar(nickname):
+    user = User.query.filter(User.nickname == nickname).first()
+    # In cazul in care userul cerut nu exista
+    if user is None:
+        error = {
+            "message": None
+        }
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Pentru a creea un raspuns folosind JSON
+    # @updating = daca va fi actualizat in viitorul apropiat
+    # @result = problemele userului de pe site-ul cerut
+
+    data = dbutils.getSurse(user, "all")
+    result = {}
+    for i in data:
+        try:
+            result[i.data] += 1
+        except Exception:
+            result[i.data] = 1
+
+    db.session.commit()
+
+    if dbutils.needsUpdate(user, "all"):
+        if user.lock.locked():
+            return Response(json.dumps(result),
+                            status=303,
+                            mimetype='application/json')
+        user.lock.acquire()
+        thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
+        thread.start()
+
+        return Response(json.dumps(result),
+                        status=303,
+                        mimetype='application/json')
+
+    # Pentru a specifica browserului ca este un raspuns JSON
+    return app.response_class(
+        response=json.dumps(result),
         status=200,
         mimetype='application/json'
     )
