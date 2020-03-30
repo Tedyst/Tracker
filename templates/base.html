@@ -8,6 +8,7 @@
         <title>Tracker - {% block title %}{% endblock %}</title>
         <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
         <meta name="viewport" content="width=device-width" />
+        <link href="{{ url_for('static', filename='css/cal-heatmap.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
         <link href="{{ url_for('static', filename='css/material-dashboard.css') }}" rel="stylesheet" />
         <link href="{{ url_for('static', filename='css/font-awesome.css') }}" rel="stylesheet" />
@@ -15,6 +16,8 @@
     </head>
     <body>
         {% block content %}{% endblock %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+        <script src="{{ url_for('static', filename='js/cal-heatmap.min.js')}}" type="text/javascript"></script>
         <script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}" type="text/javascript"></script>
         <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}" type="text/javascript"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" type="text/javascript"></script>
