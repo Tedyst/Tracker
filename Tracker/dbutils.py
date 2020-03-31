@@ -67,7 +67,7 @@ def updateUsername(user: User, username, site):
     if not validUsername(username, site):
         return
     user[site] = username
-    # updateSurse(user.id, site)
+    updateThreaded(user)
 
 
 def needsUpdate(user: User, site):
