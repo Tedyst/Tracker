@@ -17,43 +17,44 @@
     {% with page='index' %}
         {% include 'sidebar.html' %}
     {% endwith %}
+    
     <div class="main-panel">
+        
         {% with title="Pagina Principala" %}
             {% include 'navbar.html' %}
         {% endwith %}
         <div class="content">
-
             <div class="container-fluid">
-        {%if first_time %}
-            <div class="alert alert-info alert-with-icon" data-notify="container">
-                <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
-                <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-                    <i class="material-icons">close</i>
-                </button>
-                <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
-                <span data-notify="message">
-                    Pentru a putea sa-ti vezi sursele, te rugam introdu-ti username-urile de pe site-urile
-                    listate in meniul  "Settings"
-                </span>
-            </div>
-        {% else %}
-                <div class="row">
-                    <div class="col-md-12">
-                        {%if current_user.is_authenticated%}
-                        <div class="card">
-                            <div class="card-header card-header-icon " data-background-color="green">
-                                <i class="material-icons">language</i>
-                            </div>
-                            <div class="card-content">
-                                    <h3 class="card-title">4 Month Heatmap</h3>
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div id="cal-heatmap1"></div>
+            {%if first_time %}
+                <div class="alert alert-info alert-with-icon" data-notify="container">
+                    <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                        <i class="material-icons">close</i>
+                    </button>
+                    <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
+                    <span data-notify="message">
+                        Pentru a putea sa-ti vezi sursele, te rugam introdu-ti username-urile de pe site-urile
+                        listate in meniul  "Settings"
+                    </span>
+                </div>
+            {% else %}
+                {%if current_user.is_authenticated%}
+                    <div class="row">
+                        <div class="col-md-12" id="calendar-id">
+                            <div class="card">
+                                <div class="card-header card-header-icon " data-background-color="green">
+                                    <i class="material-icons">language</i>
+                                </div>
+                                <div class="card-content">
+                                        <h3 class="card-title">4 Month Heatmap</h3>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div id="cal-heatmap1"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -69,27 +70,81 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header card-header-icon" data-background-color="purple">
-                                        <i class="material-icons">show_chart</i>
-                                    </div>
-                                    <div class="card-content">
-                                        <h3 class="card-title">Alt grafic</h3>
-                                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header card-header-icon" data-background-color="purple">
+                                    <i class="material-icons">show_chart</i>
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">Alt grafic</h3>
                                 </div>
                             </div>
-                            {%endif%}
                         </div>
-                </div>
+                    </div>
                 {%endif%}
+            {%endif%}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-notice">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <i class="material-icons">clear</i>
+                        </button>
+                        <h5 class="modal-title" id="myModalLabel">asd</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="material-datatables">
+                            <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Numele problemei</th>
+                                        <th>Scorul obtinut</th>
+                                        <th>ID Problemei</th>
+                                        <th>Site</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>Numele problemei</th>
+                                        <th>Scorul obtinut</th>
+                                        <th>ID Problemei</th>
+                                        <th>Site</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </tfoot>
+                                <tbody id="table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript">
+    var data = {{ data|safe }};
     var cal1 = new CalHeatMap();
-    
+    var cal1data = {};
+    var sursemap = {};
+    for( i in data ) {
+        data_trim = data[i]["data"] - data[i]["data"] % 86400;
+        if(!cal1data.hasOwnProperty(data_trim))
+            cal1data[data_trim] = 0;
+        cal1data[data_trim] += 1;
+        if(!sursemap.hasOwnProperty(data_trim))
+            sursemap[data_trim] = [];
+        sursemap[data_trim].push(data[i]);
+    }
+
     var up = new Date();
     var year = up.getFullYear();
     var month = up.getMonth()-3;
@@ -115,10 +170,61 @@
         legend: [1,3,5],
         displayLegend: true,
         highlight: "now",
-        data: "{{ url_for('api_users_calendar', nickname=current_user.nickname) }}",
+        data: cal1data,
         onClick: function(date, nb) {
-        
-        }
+            $("#noticeModal").modal();
+            var timp = date.getTime() / 1000;
+            timp = timp - timp % 86400 + 86400;
+            console.log(timp);
+            console.log(sursemap);
+            console.log(sursemap[timp]);
+            $('#myModalLabel').html("Surse trimise la " + moment.utc(timp, "X").format('YYYY-MM-DD'));
+            var tr = document.createElement('tbody');
+            let old_tr = document.getElementById("table-body");
+            tr.id = "table-body";
+            old_tr.parentNode.replaceChild(tr, old_tr);
+            for (var j = 0; j < sursemap[timp].length; j++) {
+                var row = tr.insertRow(j);
+                var cell0 = row.insertCell(0);
+                cell0.innerHTML = sursemap[timp][j]['problema'];
+                var cell1 = row.insertCell(1);
+                cell1.innerHTML = sursemap[timp][j]['scor'];
+                var cell2 = row.insertCell(2);
+                cell2.innerHTML = sursemap[timp][j]['idprob'];
+                var cell3 = row.insertCell(3);
+
+                var a = document.createElement('a');
+                var link = document.createTextNode(sursemap[timp][j]['sursa']); 
+                a.title = sursemap[timp][j]['sursa'];
+                a.href = sursemap[timp][j]['url'];
+                a.innerHTML = sursemap[timp][j]['sursa'];
+                cell3.appendChild(a);
+
+                var cell4 = row.insertCell(4);
+                cell4.innerHTML = moment.utc(sursemap[timp][j]['data'], "X").format('YYYY-MM-DD');
+                
+            }
+        }   
+    });
+</script>
+<script>
+        $('#datatables').DataTable({
+            pagingType: "full_numbers",
+            lengthMenu: [
+                [15, 50, 100, -1],
+                [15, 50, 100, "All"]
+            ],
+            order: [[ 4, "desc" ]],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Cauta prin surse trimise",
+            }
+        });
+
+        var table = $('#datatables').DataTable();
+
+        $('.card .material-datatables label').addClass('form-group');
     });
 </script>
 <script type="text/javascript">

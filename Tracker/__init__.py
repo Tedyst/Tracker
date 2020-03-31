@@ -118,7 +118,7 @@ class Problema(db.Model):
         self.username = username
         self.url = url
 
-    def to_json(self):
+    def __json__(self):
         data = {}
         data["sursa"] = self.sursa
         data["problema"] = self.problema
@@ -127,7 +127,7 @@ class Problema(db.Model):
         data["scor"] = self.scor
         data["data"] = self.data
         data["username"] = self.username
-        return json.dumps(data)
+        return data
 
     def to_dict(self):
         data = {}

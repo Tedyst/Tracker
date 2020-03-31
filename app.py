@@ -2,7 +2,7 @@
 import json
 from threading import Thread
 from flask import render_template, Response, request, redirect, url_for
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from Tracker import app, db, User, SITES, SITES_ALL
 import Tracker.dbutils as dbutils
@@ -12,7 +12,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html', SITES=SITES_ALL)
+        surse = json.dumps([i.__json__() for i in dbutils.getSurse(current_user, "all")])
+        return render_template('index.html', SITES=SITES_ALL, data=surse)
     else:
         return render_template('login.html')
 
@@ -326,7 +327,8 @@ def register():
         if user is None:
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
-            return render_template('index.html', first_time=True)
+            surse = json.dumps(dbutils.getSurse(current_user, "all").toJson())
+            return render_template('index.html', first_time=True, data=surse)
         return render_template('register.html')
 
 
