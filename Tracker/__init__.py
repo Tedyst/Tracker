@@ -97,7 +97,6 @@ class User(db.Model):
 class Problema(db.Model):
     __tablename__ = 'probleme'
     id = db.Column(db.Integer, primary_key=True)
-    iduser = db.Column(db.Integer)
     username = db.Column(db.String)
     sursa = db.Column(db.String)
     problema = db.Column(db.String)
@@ -107,7 +106,6 @@ class Problema(db.Model):
     url = db.Column(db.String)
 
     def __init__(self,
-                 iduser,
                  sursa,
                  problema,
                  idprob,
@@ -115,7 +113,6 @@ class Problema(db.Model):
                  data,
                  username,
                  url):
-        self.iduser = iduser
         self.sursa = sursa
         self.problema = problema
         self.idprob = idprob

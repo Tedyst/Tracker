@@ -8,7 +8,7 @@ from Tracker import Problema
 URL = "https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php"
 
 
-def getUser(idparent, user) -> [Problema]:
+def getUser(user) -> [Problema]:
     PARAMS = {"user": user, "force_reload": "true"}
     r = requests.get(url=URL, params=PARAMS)
     data = json.loads(r.content)
@@ -18,9 +18,8 @@ def getUser(idparent, user) -> [Problema]:
         data = datetime.datetime.strptime(i['data_upload'], "%Y-%m-%d")
         data = int(time.mktime(data.timetuple()))
         url = "https://pbinfo.ro/probleme/" + i['id'] + "/" + i['denumire']
-        
-        problema = Problema(idparent,
-                            "pbinfo",
+
+        problema = Problema("pbinfo",
                             i['denumire'],
                             i['id'],
                             i['scor'],

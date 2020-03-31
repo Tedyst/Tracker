@@ -44,7 +44,7 @@ def _getNumberOfPages(user):
     return int(pages.contents[nr].contents[0])
 
 
-def _getUser(idparent, user, page) -> [Problema]:
+def _getUser(user, page) -> [Problema]:
     PARAMS = {
         "only_table": "1",
         "first_entry": page*100,
@@ -71,8 +71,7 @@ def _getUser(idparent, user, page) -> [Problema]:
         idprob = problema.contents[2].contents[0].attrs['href'].replace('/problema/', '')
         url = "https://www.infoarena.ro/problema/" + idprob
 
-        problema = Problema(idparent,
-                            "infoarena",
+        problema = Problema("infoarena",
                             nume,
                             idprob,
                             scor,
@@ -84,11 +83,11 @@ def _getUser(idparent, user, page) -> [Problema]:
     return result
 
 
-def getUser(idparent, user) -> [Problema]:
+def getUser(user) -> [Problema]:
     nrpagini = _getNumberOfPages(user)
     result = []
     for i in range(0, nrpagini):
-        result += _getUser(idparent, user, i)
+        result += _getUser(user, i)
     return result
 
 

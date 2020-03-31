@@ -1,19 +1,23 @@
 import importlib
 from typing import Iterable
 import time
-from Tracker import db, Problema, User, SITES, SITES_ALL
+from Tracker import db, Problema, User, SITES
 from Tracker.utils import validUsername
 from threading import Thread
 import queue
-import copy
 updatequeue = queue.Queue()
 
 
 def getSurse(user: User, site) -> Iterable[Problema]:
     if site == "all":
-        q = Problema.query.filter(Problema.iduser == user.id).all()
+        result = []
+        for i in SITES:
+            if user[i] is not None:
+                result += Problema.query.filter(Problema.username == user[i])\
+                                        .filter(Problema.sursa == i).all()
+        return result
     else:
-        q = Problema.query.filter(Problema.iduser == user.id)\
+        q = Problema.query.filter(Problema.username == user[i])\
                                 .filter(Problema.sursa == site).all()
     return q
 
@@ -28,17 +32,15 @@ def addSurse(probleme):
     db.session.commit()
 
 
-def updateSurse(id, sursa, username):
+def updateSurse(sursa, username):
     mod = importlib.import_module("Tracker.sites." + sursa)
     print("Updating surse for ", username, " from site ", sursa)
     if mod.testUser(username):
-        probleme = mod.getUser(id, username)
+        probleme = mod.getUser(username)
         for i in probleme:
             if type(i) != Problema:
                 continue
-            sursa = Problema.query.filter(Problema.data == i.data).first()
-            if sursa is None:
-                updatequeue.put(i)
+            updatequeue.put(i)
 
 
 def userExists(nickname):
@@ -91,15 +93,15 @@ def needsUpdate(user: User, site):
 
 def updateThreaded(user: User):
     # Create a new thread that controls all the other threads
-    thread = Thread(target=_threadedupd, args=[user.usernames(), user.id, user.lock])
-    thread.start()
+    thread = Thread(target=_threadedupd, args=[user.usernames(), user.lock])
     for i in SITES:
         if user[i] is not None:
             user["last_" + i] = int(time.time())
-    return thread
+    db.session.commit()
+    thread.start()
 
 
-def _threadedupd(usernames, id, lock):
+def _threadedupd(usernames, lock):
     # If it is locked, it means that the user is updating already
     if lock.locked():
         return
@@ -109,7 +111,7 @@ def _threadedupd(usernames, id, lock):
 
     for i in SITES:
         if usernames[i] is not None:
-            thread = Thread(target=updateSurse, args=[id, i, usernames[i]])
+            thread = Thread(target=updateSurse, args=[i, usernames[i]])
             threads.append(thread)
 
     for site in threads:
@@ -122,8 +124,10 @@ def _threadedupd(usernames, id, lock):
             elem = updatequeue.get_nowait()
         except queue.Empty:
             break
+        sursa = Problema.query.filter(Problema.data == elem.data).first()
+        if sursa is None:
+            db.session.add(elem)
         updatequeue.task_done()
-        db.session.add(elem)
     db.session.commit()
     print("Committed to databsase")
     lock.release()

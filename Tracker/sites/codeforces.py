@@ -7,7 +7,7 @@ from Tracker import Problema
 URL = "https://codeforces.com/submissions/"
 
 
-def _getUser(idparent, user, page) -> [Problema]:
+def _getUser(user, page) -> [Problema]:
     r = requests.get(url=URL + user + '/page/' + str(page))
     soup = BeautifulSoup(r.content, 'html.parser')
     table = soup.find('table', class_='status-frame-datatable')
@@ -47,8 +47,7 @@ def _getUser(idparent, user, page) -> [Problema]:
 
             url = "https://codeforces.com" + idprob
 
-            problema = Problema(idparent,
-                                "codeforces",
+            problema = Problema("codeforces",
                                 nume_problema.strip(),
                                 idprob,
                                 scor,
@@ -72,11 +71,11 @@ def _getNumberOfPages(user):
         return result
 
 
-def getUser(idparent, user) -> [Problema]:
+def getUser(user) -> [Problema]:
     nrpagini = _getNumberOfPages(user)
     result = []
     for i in range(1, nrpagini+1):
-        result += _getUser(idparent, user, i)
+        result += _getUser(user, i)
 
     return result
 
