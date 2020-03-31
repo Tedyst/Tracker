@@ -65,7 +65,7 @@ def test_return_surse_dbutils():
     user = dbutils.getUser("Tedyst")
     user["pbinfo"] = "Tedyst"
 
-    problema = Problema(user.id, "pbinfo", "test", "1", "100", 1, "Tedyst", "")
+    problema = Problema("pbinfo", "test", "1", "100", 1, "Tedyst", "")
     dbutils.addSurse([problema])
 
     surse = dbutils.getSurse(user, "pbinfo")

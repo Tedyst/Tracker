@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import json
-from threading import Thread
 from flask import render_template, Response, request, redirect, url_for
+from datetime import datetime
 
 from Tracker import app, db, User, SITES, SITES_ALL
 import Tracker.dbutils as dbutils
@@ -10,7 +10,27 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 @app.route('/')
 def index():
-    return render_template('index.html', SITES=SITES_ALL)
+    if current_user.is_authenticated:
+        surse = json.dumps([i.__json__() for i in dbutils.getSurse(current_user, "all")])
+        return render_template('index.html', SITES=SITES_ALL, data=surse)
+    else:
+        return render_template('login.html')
+
+
+@app.route('/index/<nickname>')
+def index_username(nickname):
+    if current_user.is_authenticated:
+        user = dbutils.getUser(nickname)
+        if user is None:
+            return app.response_class(
+                response=render_template('404.html'),
+                status=404
+            )
+
+        surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
+        return render_template('index.html', SITES=SITES_ALL, data=surse)
+    else:
+        return render_template('login.html')
 
 
 @app.route('/api/users/<user>')
@@ -78,16 +98,7 @@ def prob_user(nickname):
     db.session.commit()
 
     if dbutils.needsUpdate(user, "all"):
-        # If it is locked, it means that the user is updating already
-        if user.lock.locked():
-            return render_template('prob.html',
-                                   data=result,
-                                   updating=True,
-                                   user=user)
-        # Start updating user
-        user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
-        thread.start()
+        dbutils.updateThreaded(user)
 
         # Return old data to the user before we finish updating
         return render_template('prob.html',
@@ -131,13 +142,8 @@ def settings():
         except KeyError:
             pass
     if current_user.lock.locked():
+        dbutils.updateThreaded(current_user)
         return render_template('settings.html', updated=True)
-
-        # Start updating user
-        current_user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[current_user,
-                                                              "all"], data=site_names)
-        thread.start()
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -154,6 +160,7 @@ def prob():
     if current_user.is_authenticated:
         return redirect(url_for('prob_user', nickname=current_user.nickname))
     return redirect(url_for('index'))
+
 
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
@@ -198,13 +205,7 @@ def api_users(nickname, site):
     db.session.commit()
 
     if response["updating"]:
-        if user.lock.locked():
-            return Response(json.dumps(response),
-                            status=303,
-                            mimetype='application/json')
-        user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[user, site])
-        thread.start()
+        dbutils.updateThreaded(user)
 
         return Response(json.dumps(response),
                         status=303,
@@ -213,6 +214,53 @@ def api_users(nickname, site):
     # Pentru a specifica browserului ca este un raspuns JSON
     return app.response_class(
         response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/api/calendar/<nickname>')
+def api_users_calendar(nickname):
+    user = User.query.filter(User.nickname == nickname).first()
+    # In cazul in care userul cerut nu exista
+    if user is None:
+        error = {
+            "message": None
+        }
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Pentru a creea un raspuns folosind JSON
+    # @updating = daca va fi actualizat in viitorul apropiat
+    # @result = problemele userului de pe site-ul cerut
+
+    data = dbutils.getSurse(user, "all")
+    mem = []
+    result = {}
+    for i in data:
+        timp = int(datetime.fromtimestamp(i.data).replace(hour=0, minute=0, second=0).timestamp())
+        try:
+            if i.idprob not in mem:
+                result[timp] += 1
+                mem.append(i.idprob)
+        except Exception:
+            result[timp] = 1
+    db.session.commit()
+
+    if dbutils.needsUpdate(user, "all"):
+        dbutils.updateThreaded(user)
+
+        return Response(json.dumps(result),
+                        status=303,
+                        mimetype='application/json')
+
+    # Pentru a specifica browserului ca este un raspuns JSON
+    return app.response_class(
+        response=json.dumps(result),
         status=200,
         mimetype='application/json'
     )
@@ -268,7 +316,8 @@ def register():
         if user is None:
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
-            return render_template('index.html', first_time=True)
+            surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
+            return render_template('index.html', first_time=True, data=surse)
         return render_template('register.html')
 
 
