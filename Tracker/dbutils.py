@@ -73,7 +73,6 @@ def updateUsername(user: User, username, site):
 
 
 def needsUpdate(user: User, site):
-    return True
     if site == "all":
         for site in SITES:
             if user[site] is not None:
