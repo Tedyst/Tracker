@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import json
-from threading import Thread
 from flask import render_template, Response, request, redirect, url_for
 from datetime import datetime
 
@@ -99,16 +98,7 @@ def prob_user(nickname):
     db.session.commit()
 
     if dbutils.needsUpdate(user, "all"):
-        # If it is locked, it means that the user is updating already
-        if user.lock.locked():
-            return render_template('prob.html',
-                                   data=result,
-                                   updating=True,
-                                   user=user)
-        # Start updating user
-        user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
-        thread.start()
+        dbutils.updateThreaded(user)
 
         # Return old data to the user before we finish updating
         return render_template('prob.html',
@@ -152,13 +142,8 @@ def settings():
         except KeyError:
             pass
     if current_user.lock.locked():
+        dbutils.updateThreaded(current_user)
         return render_template('settings.html', updated=True)
-
-        # Start updating user
-        current_user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[current_user,
-                                                              "all"], data=site_names)
-        thread.start()
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -220,13 +205,7 @@ def api_users(nickname, site):
     db.session.commit()
 
     if response["updating"]:
-        if user.lock.locked():
-            return Response(json.dumps(response),
-                            status=303,
-                            mimetype='application/json')
-        user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[user, site])
-        thread.start()
+        dbutils.updateThreaded(user)
 
         return Response(json.dumps(response),
                         status=303,
@@ -273,13 +252,7 @@ def api_users_calendar(nickname):
     db.session.commit()
 
     if dbutils.needsUpdate(user, "all"):
-        if user.lock.locked():
-            return Response(json.dumps(result),
-                            status=303,
-                            mimetype='application/json')
-        user.lock.acquire()
-        thread = Thread(target=dbutils.updateAndCommit, args=[user, "all"])
-        thread.start()
+        dbutils.updateThreaded(user)
 
         return Response(json.dumps(result),
                         status=303,
@@ -343,7 +316,7 @@ def register():
         if user is None:
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
-            surse = json.dumps(dbutils.getSurse(current_user, "all").toJson())
+            surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
             return render_template('index.html', first_time=True, data=surse)
         return render_template('register.html')
 

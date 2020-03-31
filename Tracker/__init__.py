@@ -87,6 +87,12 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
+    def usernames(self):
+        result = {}
+        for i in SITES:
+            result[i] = self[i]
+        return result
+
 
 class Problema(db.Model):
     __tablename__ = 'probleme'
