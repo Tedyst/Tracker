@@ -88,7 +88,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal fade" id="popupProbleme" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
             <div class="modal-dialog modal-notice">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -172,7 +172,7 @@
         highlight: "now",
         data: cal1data,
         onClick: function(date, nb) {
-            $("#noticeModal").modal();
+            $("#popupProbleme").modal();
             var timp = date.getTime() / 1000;
             timp = timp - timp % 86400 + 86400;
             console.log(timp);
