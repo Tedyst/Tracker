@@ -45,12 +45,11 @@
     }
  })();
 
-var breakCards = true;
+var breakCards = false;
 
 var searchVisible = 0;
 var transparent = true;
 
-var transparentDemo = true;
 var fixedTop = false;
 
 var mobile_menu_visible = 0,
@@ -102,38 +101,6 @@ $(document).ready(function(){
     });
 
 
-    if(breakCards == true){
-        // We break the cards headers if there is too much stress on them :-)
-        $('[data-header-animation="true"]').each(function(){
-            var $fix_button = $(this)
-            var $card = $(this).parent('.card');
-
-            $card.find('.fix-broken-card').click(function(){
-                console.log(this);
-                var $header = $(this).parent().parent().siblings('.card-header, .card-image');
-
-                $header.removeClass('hinge').addClass('fadeInDown');
-
-                $card.attr('data-count',0);
-
-                setTimeout(function(){
-                    $header.removeClass('fadeInDown animate');
-                },480);
-            });
-
-            $card.mouseenter(function(){
-                var $this = $(this);
-                hover_count = parseInt($this.attr('data-count'), 10) + 1 || 0;
-                $this.attr("data-count", hover_count);
-
-                if (hover_count >= 20){
-                    $(this).children('.card-header, .card-image').addClass('hinge animated');
-                }
-            });
-        });
-    }
-
-
 });
 
 // activate collapse right menu when the windows is resized
@@ -160,27 +127,6 @@ md = {
             sidebar_container = '<div class="sidebar-background" style="background-image: url(' + image_src + ') "/>';
             $sidebar.append(sidebar_container);
         }
-    },
-
-    initSliders: function(){
-        // Sliders for demo purpose
-        $('#sliderRegular').noUiSlider({
-            start: 40,
-            connect: "lower",
-            range: {
-                min: 0,
-                max: 100
-            }
-        });
-
-        $('#sliderDouble').noUiSlider({
-            start: [20, 60] ,
-            connect: true,
-            range: {
-                min: 0,
-                max: 100
-            }
-        });
     },
 
     initSidebarsCheck: function(){
