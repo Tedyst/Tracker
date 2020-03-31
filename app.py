@@ -18,6 +18,22 @@ def index():
         return render_template('login.html')
 
 
+@app.route('/index/<nickname>')
+def index_username(nickname):
+    if current_user.is_authenticated:
+        user = dbutils.getUser(nickname)
+        if user is None:
+            return app.response_class(
+                response=render_template('404.html'),
+                status=404
+            )
+
+        surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
+        return render_template('index.html', SITES=SITES_ALL, data=surse)
+    else:
+        return render_template('login.html')
+
+
 @app.route('/api/users/<user>')
 def api_getuser(user):
     # In cazul in care userul cerut nu exista
