@@ -172,12 +172,11 @@
         highlight: "now",
         data: cal1data,
         onClick: function(date, nb) {
-            $("#popupProbleme").modal();
             var timp = date.getTime() / 1000;
             timp = timp - timp % 86400 + 86400;
-            console.log(timp);
-            console.log(sursemap);
-            console.log(sursemap[timp]);
+            if(sursemap[timp].length == 0)
+                return;
+            $("#popupProbleme").modal();
             $('#myModalLabel').html("Surse trimise la " + moment.utc(timp, "X").format('YYYY-MM-DD'));
             var tr = document.createElement('tbody');
             let old_tr = document.getElementById("table-body");
