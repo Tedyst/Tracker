@@ -1,0 +1,75 @@
+﻿{% extends 'base.html' %}
+
+{% block title %} Register {% endblock %}
+
+{% block content %}
+    {% with page='register' %}
+        {% include 'navbar_login.html' %}
+    {% endwith %}
+    <div class="wrapper wrapper-full-page">
+        <div class="full-page login-page" filter-color="black" data-image="{{ url_for('static', filename='img/login.jpg') }}">
+            <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+            <div class="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
+                            <form method="post" action="{{ url_for('register') }}">
+                                <div class="card card-login card-hidden">
+                                    <div class="card-header text-center" data-background-color="rose">
+                                        <h4 class="card-title">Register</h4>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="material-icons">face</i>
+                                            </span>
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Username</label>
+                                                <input type="text" class="form-control" id="name" name="name">
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="material-icons">email</i>
+                                            </span>
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Email address</label>
+                                                <input type="email" class="form-control" id="email" name="email">
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="material-icons">lock_outline</i>
+                                            </span>
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Password</label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="footer text-center">
+                                        <button type="submit" class="btn btn-rose btn-simple btn-wd btn-lg">Let's go</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+<script type="text/javascript">
+    $().ready(function() {
+        demo.checkFullPageBackgroundImage();
+
+        setTimeout(function() {
+            // after 1000 ms we add the class animated to the login/register card
+            $('.card').removeClass('card-hidden');
+        }, 300)
+    });
+</script>
+{% endblock %}

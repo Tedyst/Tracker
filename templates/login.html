@@ -1,0 +1,78 @@
+﻿{% extends 'base.html' %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+    {% with page='login' %}
+        {% include 'navbar_login.html' %}
+    {% endwith %}
+    <div class="wrapper wrapper-full-page">
+        <div class="full-page login-page" filter-color="black" data-image="{{ url_for('static', filename='img/login.jpg') }}">
+            <div class="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 col-md-offset-4 col-sm-offset-3">
+                            <form method="post" action="{{ url_for('login') }}">
+                                <div class="card card-login card-hidden">
+                                    {% if failedlogin %}
+                                        <div class="card-header text-center" data-background-color="rose">
+                                            <h4 class="card-title">User sau parola incorecte</h4>
+                                        </div>
+                                    {% else %}
+                                        <div class="card-header text-center" data-background-color="rose">
+                                            <h4 class="card-title">Login</h4>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-content">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="material-icons">email</i>
+                                            </span>
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Email address or Username</label>
+                                                <input type="text" class="form-control" id="email" name="email">
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="material-icons">lock_outline</i>
+                                            </span>
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Password</label>
+                                                <input type="password" class="form-control" id="password" name="password">
+                                            </div>
+                                        </div>
+                                        <div class="checkbox form-horizontal-checkbox">
+                                            <label>
+                                                <input type="checkbox" id="remember" name="remember">
+                                                <span class="check"></span>
+                                                Remember Me
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="footer text-center">
+                                        <button type="submit" class="btn btn-rose btn-simple btn-wd btn-lg">Let's go</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+<script type="text/javascript">
+    $().ready(function() {
+        demo.checkFullPageBackgroundImage();
+
+        setTimeout(function() {
+            // after 1000 ms we add the class animated to the login/register card
+            $('.card').removeClass('card-hidden');
+        }, 700)
+    });
+</script>
+{% endblock %}

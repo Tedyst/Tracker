@@ -3,7 +3,7 @@ import requests
 import json
 import datetime
 import time
-from Tracker.classes import Problema
+from Tracker import Problema
 
 URL = "https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php"
 
@@ -17,13 +17,16 @@ def getUser(idparent, user) -> [Problema]:
     for i in data['content']:
         data = datetime.datetime.strptime(i['data_upload'], "%Y-%m-%d")
         data = int(time.mktime(data.timetuple()))
+        url = "https://pbinfo.ro/probleme/" + i['id'] + "/" + i['denumire']
+        
         problema = Problema(idparent,
                             "pbinfo",
                             i['denumire'],
                             i['id'],
                             i['scor'],
                             data,
-                            user)
+                            user,
+                            url)
         result.append(problema)
     return result
 

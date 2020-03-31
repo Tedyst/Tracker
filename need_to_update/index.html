@@ -1,0 +1,19 @@
+<html>
+    <header>
+        <title>Index</title>
+        <link href="{{ url_for('static', filename='style.css') }}" type="text/css">
+    </header>
+
+    <body>
+        <form action="search" method="GET">
+            <select name="site">
+                {% for i in SITES %}
+                <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="user" placeholder="Username"/>
+            <input type="submit" value="Trimite"/>
+        </form>
+    </body>
+
+</html>

@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import time
-from Tracker.classes import Problema
+from Tracker import Problema
 
 URL = "https://codeforces.com/submissions/"
 
@@ -15,15 +15,19 @@ def _getUser(idparent, user, page) -> [Problema]:
 
     for sumb in table.find_all('tr'):
         if sumb.contents[1].string != "#":
-            link_problema = ""
+            idprob = ""
             nume_problema = ""
             scor = ""
             data = ""
+
             # extrage numele si id-ul problemelor
             link = sumb.contents[7].find_all('a')
             for x in link:
-                link_problema = x['href']
+                idprob = x['href']
                 nume_problema = x.get_text()
+                nume_problema = nume_problema.replace('/contest/', '')
+                nume_problema = nume_problema.replace('/gym/', '')
+                nume_problema = nume_problema.replace('/problem/', '')
 
             # Alta incercare de scor
             scor = ""
@@ -41,13 +45,16 @@ def _getUser(idparent, user, page) -> [Problema]:
             data = datetime.datetime.strptime(data, "%b/%d/%Y %H:%M")
             data = int(time.mktime(data.timetuple()))
 
+            url = "https://codeforces.com" + idprob
+
             problema = Problema(idparent,
                                 "codeforces",
                                 nume_problema.strip(),
-                                link_problema,
+                                idprob,
                                 scor,
                                 data,
-                                user)
+                                user,
+                                url)
             result.append(problema)
 
     return result

@@ -5,7 +5,7 @@ from bs4.element import NavigableString
 import datetime
 import time
 from urllib.parse import urlencode
-from Tracker.classes import Problema
+from Tracker import Problema
 
 URL = "https://infoarena.ro/monitor?"
 
@@ -68,13 +68,17 @@ def _getUser(idparent, user, page) -> [Problema]:
             scor = scor.replace("Evaluare completa: ", "")
             scor = int(scor.replace("puncte", ""))
 
+        idprob = problema.contents[2].contents[0].attrs['href'].replace('/problema/', '')
+        url = "https://www.infoarena.ro/problema/" + idprob
+
         problema = Problema(idparent,
                             "infoarena",
-                            nume,  # nume
-                            nume,  # id
+                            nume,
+                            idprob,
                             scor,
                             data,
-                            user)
+                            user,
+                            url)
         result.append(problema)
 
     return result
