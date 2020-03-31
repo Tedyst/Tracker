@@ -1,11 +1,15 @@
 import Tracker.dbutils as dbutils
 from Tracker import Problema, User
+from threading import Thread
 
 
 def test_pbinfo():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
-    dbutils.updateUsername(user, "Tedyst", "pbinfo")
+    user.pbinfo = "Tedyst"
+    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread.start()
+    thread.join()
     surse = dbutils.getSurse(user, "pbinfo")
     for problema in surse:
         if type(problema) != Problema:
@@ -16,7 +20,10 @@ def test_pbinfo():
 def test_codeforces():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
-    dbutils.updateUsername(user, "Tedyst", "codeforces")
+    user.codeforces = "Tedyst"
+    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread.start()
+    thread.join()
     surse = dbutils.getSurse(user, "codeforces")
     for problema in surse:
         if type(problema) != Problema:
@@ -27,7 +34,10 @@ def test_codeforces():
 def test_infoarena():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
-    dbutils.updateUsername(user, "Tedyst", "infoarena")
+    user.infoarena = "Tedyst"
+    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread.start()
+    thread.join()
     surse = dbutils.getSurse(user, "infoarena")
     for problema in surse:
         if type(problema) != Problema:

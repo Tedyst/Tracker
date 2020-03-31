@@ -17,7 +17,7 @@ def getSurse(user: User, site) -> Iterable[Problema]:
                                         .filter(Problema.sursa == i).all()
         return result
     else:
-        q = Problema.query.filter(Problema.username == user[i])\
+        q = Problema.query.filter(Problema.username == user[site])\
                                 .filter(Problema.sursa == site).all()
     return q
 
