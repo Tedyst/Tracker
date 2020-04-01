@@ -130,6 +130,14 @@ def settings():
             return render_template('settings.html', data=site_names, edit=False)
         return redirect(url_for('index'))
 
+    user = dbutils.getUser(current_user.nickname)
+    for site in SITES:
+        if user[site] is None:
+            site_names[site] = "None set"
+        else:
+            site_names[site] = user[site]
+
+
     data = request.form
     for i in SITES:
         try:
@@ -143,7 +151,7 @@ def settings():
             pass
     if current_user.lock.locked():
         dbutils.updateThreaded(current_user)
-        return render_template('settings.html', updated=True)
+        return render_template('settings.html', updated=True, data=site_names)
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
