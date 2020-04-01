@@ -189,7 +189,7 @@
 
     var responsiveCal = function( options ) {
         var now = new Date();
-        if( $(window).width() < 1050 ) {
+        if( $(window).width() < 1050 && !($(window).width() < 1000 && $(window).width() > 750)) {
             options.start = now.setMonth(now.getMonth());
             options.range = 1;
         } else if ( $(window).width() < 1500 ) {
