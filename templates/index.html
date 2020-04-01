@@ -189,9 +189,11 @@
 
     var responsiveCal = function( options ) {
         var now = new Date();
-        if( $(window).width() < 1050 && !($(window).width() < 1000 && $(window).width() > 750)) {
-            if( $(window).width() < 600 )
-                options.cellSize = 40;
+        if( $(window).width() < 800 || $(window).height() < 800)
+            options.cellSize = 40;
+        else
+            options.cellSize = 45;
+        if( $(window).width() < 1050 && !($(window).width() < 1000 && $(window).width() > 750) && !(options.cellSize == 40 && $(window).width() > 739) ) {
             options.start = now.setMonth(now.getMonth());
             options.range = 1;
         } else if ( $(window).width() < 1500 ) {
