@@ -129,26 +129,11 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    var data = {{ data|safe }};
-    var cal1 = new CalHeatMap();
+    var data = JSON.parse(`{{ data|safe }}`);
     var cal1data = {};
     var sursemap = {};
-    for( i in data ) {
-        data_trim = data[i]["data"] - data[i]["data"] % 86400;
-        if(!cal1data.hasOwnProperty(data_trim))
-            cal1data[data_trim] = 0;
-        cal1data[data_trim] += 1;
-        if(!sursemap.hasOwnProperty(data_trim))
-            sursemap[data_trim] = [];
-        sursemap[data_trim].push(data[i]);
-    }
 
-    var up = new Date();
-    var year = up.getFullYear();
-    var month = up.getMonth()-3;
-    var dwn = new Date(year,month);
-    
-    cal1.init({
+    caloptions = {
         itemSelector: "#cal-heatmap1",
         itemName: ["problem", "problems"],
         domain : "month",
@@ -160,10 +145,8 @@
             height:45
         },
         start: dwn,
-        minDate:dwn,
-        maxDate:up,
-        range:4,
-        rowLimit:5,
+        range: 4,
+        rowLimit: 5,
         domainGutter: 26,
         legend: [1,3,5],
         displayLegend: true,
@@ -202,6 +185,60 @@
                 
             }
         }   
+    }
+
+    var responsiveCal = function( options ) {
+        var now = new Date();
+        if( $(window).width() < 1050 ) {
+            options.start = now.setMonth(now.getMonth());
+            options.range = 1;
+        } else if ( $(window).width() < 1500 ) {
+            options.start = now.setMonth(now.getMonth() - 1);
+            options.range = 2;
+        } else if( $(window).width() < 1850 ) {
+            options.start = now.setMonth(now.getMonth() - 2);
+            options.range = 3;
+        } else {
+            options.start = now.setMonth(now.getMonth() - 3);
+            options.range = 4;
+        }
+
+        if( typeof cal1 === "object" ) {
+            $('#cal-heatmap1').html('');
+            cal1 = cal1.destroy();
+        }
+        cal1 = new CalHeatMap();
+        cal1.init( options );
+
+    }
+
+    for( i in data ) {
+        data_trim = data[i]["data"] - data[i]["data"] % 86400;
+        if(!cal1data.hasOwnProperty(data_trim))
+            cal1data[data_trim] = 0;
+        cal1data[data_trim] += 1;
+        if(!sursemap.hasOwnProperty(data_trim))
+            sursemap[data_trim] = [];
+        sursemap[data_trim].push(data[i]);
+    }
+
+    var up = new Date();
+    var year = up.getFullYear();
+    var month = up.getMonth()-3;
+    var dwn = new Date(year,month);
+    
+    responsiveCal( caloptions );
+
+    $(window).resize(function() {
+        if(this.resizeTO) clearTimeout(this.resizeTO);
+        this.resizeTO = setTimeout(function() {
+            $(this).trigger('resizeEnd');
+        }, 500);
+    });
+
+    //resize on resizeEnd function
+    $(window).bind('resizeEnd', function() {
+        responsiveCal( cal1.options );
     });
 </script>
 <script>
@@ -222,7 +259,6 @@
         var table = $('#datatables').DataTable();
 
         $('.card .material-datatables label').addClass('form-group');
-    });
 </script>
 <script type="text/javascript">
     new Chartist.Line('.ct-chart', {
