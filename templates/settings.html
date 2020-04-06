@@ -15,14 +15,14 @@
         {% endwith %}
         <div class="content">
             <div class="container-fluid">
+                {% if updated %}
+                    <div class="alert alert-info alert-with-icon" data-notify="container">
+                        <i class="material-icons" data-notify="icon">notifications</i>
+                        <span data-notify="message">Ai schimbat username-urile tale! Asteapta cateva secunde pana se descarca sursele tale!</span>
+                    </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-lg-12">
-                        {% if updated %}
-                        <div class="alert alert-info alert-with-icon" data-notify="container">
-                            <i class="material-icons" data-notify="icon">notifications</i>
-                            <span data-notify="message">Ai schimbat username-urile tale! Asteapta cateva secunde pana se descarca sursele tale!</span>
-                        </div>
-                        {% endif %}
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-header card-header-icon" data-background-color="purple">
