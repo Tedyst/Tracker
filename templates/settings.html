@@ -53,7 +53,6 @@
                                                     <div id="link{{3+loop.index}}" class="tab-pane active">
                                                         <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate">
                                                             <div class="row">
-                                                                <!-- <label class="col-md-12 col-form-label">Username curent:</label> -->
                                                                 <div class="col-xl-2">
                                                                     <div class="input-group">
                                                                         <span class="input-group-addon">
@@ -74,7 +73,6 @@
                                                     <div id="link{{3+loop.index}}" class="tab-pane">
                                                         <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate">
                                                             <div class="row">
-                                                                <!-- <label class="col-md-12 col-form-label">Username curent:</label> -->
                                                                 <div class="col-xl-2">
                                                                     <div class="input-group">
                                                                         <span class="input-group-addon">
@@ -108,14 +106,23 @@
                                 <div class="card-content">
                                     <h3 class="card-title">Setari user</h3>
                                     <div class="row">
-                                        <form method="#" action="#">
+                                        <form method="POST" action="{{ url_for('usersettings') }}">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="material-icons">lock_outline</i>
+                                                </span>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label">Parola Veche</label>
+                                                    <input type="password" class="form-control" id="oldpassword" name="oldpassword">
+                                                </div>
+                                            </div>
                                             <div class="input-group">
                                                 <span class="input-group-addon">
                                                     <i class="material-icons">email</i>
                                                 </span>
                                                 <div class="form-group label-floating">
                                                     <label class="control-label">Adresa email</label>
-                                                    <input type="text" class="form-control" id="email" name="email">
+                                                    <input type="text" class="form-control" id="email" name="email" value="{{ current_user.email }}">
                                                 </div>
                                             </div>
                                             <div class="input-group">
@@ -123,7 +130,7 @@
                                                     <i class="material-icons">lock_outline</i>
                                                 </span>
                                                 <div class="form-group label-floating">
-                                                    <label class="control-label">Parola</label>
+                                                    <label class="control-label">Noua Parola</label>
                                                     <input type="password" class="form-control" id="password" name="password">
                                                 </div>
                                             </div>

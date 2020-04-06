@@ -65,9 +65,15 @@ def getUser(nickname):
 
 def updateUsername(user: User, username, site):
     if site not in SITES:
+        app.logger.debug("Site-ul %s nu exista",
+                         site)
         return
     if not validUsername(username, site):
+        app.logger.debug("Username %s nu exista pe site-ul %s",
+                         username, site)
         return
+    app.logger.info("Schimbat username pentru site %s, user %s in %s",
+                    site, user.nickname, username)
     user[site] = username
     updateThreaded(user)
 

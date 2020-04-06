@@ -103,6 +103,21 @@ def prob_user(nickname):
                            user=user)
 
 
+@app.route('/usersettings', methods=['POST'])
+@login_required
+def usersettings():
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    data = request.form
+    if current_user.check_password(data['oldpassword']):
+        app.logger.info("Schimat parola/email pentru %s", current_user.nickname)
+        current_user.email = data['email']
+        current_user.set_password(data['password'])
+    else:
+        app.logger.info("Parola veche gresita pentru %s", current_user.nickname)
+    return redirect(url_for('settings'))
+
+
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
