@@ -11,24 +11,21 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        surse = json.dumps([i.__json__() for i in dbutils.getSurse(current_user, "all")])
-        return render_template('index.html', SITES=SITES_ALL, data=surse)
+        return render_template('index.html', SITES=SITES_ALL, user=current_user)
     else:
         return render_template('login.html')
 
 
 @app.route('/index/<nickname>')
 def index_username(nickname):
-    if current_user.is_authenticated:
-        user = dbutils.getUser(nickname)
-        if user is None:
-            return app.response_class(
-                response=render_template('404.html'),
-                status=404
-            )
+    user = dbutils.getUser(nickname)
+    if user is None:
+        return app.response_class(
+            response=render_template('404.html'),
+            status=404
+        )
 
-        surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
-        return render_template('index.html', SITES=SITES_ALL, data=surse)
+        return render_template('index.html', SITES=SITES_ALL, user=user)
     else:
         return render_template('login.html')
 
@@ -84,30 +81,24 @@ def prob_user(nickname):
 
     # In cazul in care userul cerut nu exista
     if user is None:
+        app.logger.debug("Nu am gasit user cu nickname", nickname)
         return app.response_class(
             response=render_template('404.html'),
             status=404
         )
 
-    # Get user's problems
-    data = dbutils.getSurse(user, "all")
-    result = []
-    for i in data:
-        result.append(i.to_dict())
-    result = json.dumps(result)
-    db.session.commit()
+    app.logger.debug("Gasit username cu nickname %s", nickname)
 
     if dbutils.needsUpdate(user, "all"):
+        app.logger.debug("%s are nevoie de update de surse", user.nickname)
         dbutils.updateThreaded(user)
 
         # Return old data to the user before we finish updating
         return render_template('prob.html',
-                               data=result,
                                updating=True,
                                user=user)
 
     return render_template('prob.html',
-                           data=result,
                            updating=False,
                            user=user)
 

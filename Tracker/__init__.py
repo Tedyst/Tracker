@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import threading
 import hashlib
 from sqlalchemy.orm.attributes import set_attribute, flag_modified
-import json
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 SITES = ['pbinfo', 'infoarena', 'codeforces']
@@ -17,6 +17,12 @@ app = Flask(__name__,
 app.config['SECRET_KEY'] = b",\x93e9\xe9y'P}>\x92\x8f\xc4\x80\xa9\x88"
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Debug mode
+if app.debug:
+    app.config['DEBUG_TB_PROFILER_ENABLED'] = True
+    toolbar = DebugToolbarExtension(app)
+
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
