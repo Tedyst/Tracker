@@ -106,8 +106,6 @@ def prob_user(nickname):
 @app.route('/usersettings', methods=['POST'])
 @login_required
 def usersettings():
-    if not current_user.is_authenticated:
-        return redirect(url_for('index'))
     data = request.form
     if current_user.check_password(data['oldpassword']):
         app.logger.info("Schimat parola/email pentru %s", current_user.nickname)
@@ -123,18 +121,12 @@ def usersettings():
 def settings():
     site_names = {}
     if request.method == 'GET':
-        if current_user.is_authenticated:
-            # Ia numele user-ului de pe site-uri
-            user = dbutils.getUser(current_user.nickname)
-            for site in SITES:
-                if user[site] is None:
-                    site_names[site] = "None set"
-                else:
-                    site_names[site] = user[site]
-
-            # site_names = json.dumps(site_names)
-            return render_template('settings.html', data=site_names, edit=False)
-        return redirect(url_for('index'))
+        for site in SITES:
+            if current_user[site] is None:
+                site_names[site] = "None set"
+            else:
+                site_names[site] = current_user[site]
+        return render_template('settings.html', data=site_names, edit=False)
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -142,7 +134,6 @@ def settings():
             site_names[site] = "None set"
         else:
             site_names[site] = user[site]
-
 
     data = request.form
     for i in SITES:
