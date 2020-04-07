@@ -37,7 +37,10 @@
                                 {% else %}
                                     <h4 class="card-title">Sursele trimise de utilizatorul {{ user.nickname }}</h4>
                                 {% endif %}
-                                <div class="material-datatables">
+                                <div class="text-center" id="loading-heatmap">
+                                    {% include "loading.html" %}
+                                </div>
+                                <div class="material-datatables" style="display: none;" id="material-datatable">
                                     <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
                                         <thead>
                                             <tr>
@@ -94,6 +97,12 @@
             var cell4 = row.insertCell(4);
             cell4.innerHTML = data["result"][j]['data'];
         }
+
+        var element = document.getElementById("loading-heatmap");
+        element.parentNode.removeChild(element);
+        
+        var element = document.getElementById("material-datatable");
+        element.style.display = "block";
 
         $('#datatables').DataTable({
             pagingType: "full_numbers",
