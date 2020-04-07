@@ -75,10 +75,14 @@ def updateUsername(user: User, username, site):
     app.logger.info("Schimbat username pentru site %s, user %s in %s",
                     site, user.nickname, username)
     user[site] = username
+    user["last_" + site] = None
     updateThreaded(user)
 
 
 def needsUpdate(user: User, site):
+    app.logger.debug("Fortam update pentu ca avem DEBUG mode.")
+    if app.debug:
+        return True
     if site == "all":
         for site in SITES:
             if user[site] is not None:

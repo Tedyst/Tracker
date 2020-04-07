@@ -14,6 +14,7 @@
             "args": [
                 "run",
                 "--no-debugger",
+                "--no-reload",
                 "--host",
                 "0.0.0.0"
             ],
@@ -42,7 +43,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/Tracker"
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
