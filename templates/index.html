@@ -250,16 +250,12 @@
 <script>
         $('#datatables').DataTable({
             pagingType: "full_numbers",
-            lengthMenu: [
-                [15, 50, 100, -1],
-                [15, 50, 100, "All"]
-            ],
             order: [[ 4, "desc" ]],
             responsive: true,
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Cauta prin surse trimise",
-            }
+            searching: false,
+            ordering:  false,
+            bLengthChange: false,
+            bInfo: false
         });
 
         var table = $('#datatables').DataTable();
