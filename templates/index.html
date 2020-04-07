@@ -232,6 +232,8 @@
                 sursemap[data_trim] = [];
             sursemap[data_trim].push(data["result"][i]);
         }
+        var element = document.getElementById("loading-heatmap");
+        element.parentNode.removeChild(element);
         responsiveCal( caloptions );
     });
     
