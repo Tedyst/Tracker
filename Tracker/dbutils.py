@@ -80,8 +80,8 @@ def updateUsername(user: User, username, site):
 
 
 def needsUpdate(user: User, site):
-    app.logger.debug("Fortam update pentu ca avem DEBUG mode.")
     if app.debug:
+        app.logger.debug("Fortam update pentu ca avem DEBUG mode.")
         return True
     if site == "all":
         for site in SITES:
