@@ -205,7 +205,7 @@ def api_users(nickname, site):
     data = dbutils.getSurse(user, site)
     result = []
     for i in data:
-        result.append(i.to_dict())
+        result.append(i.__json__())
     response["result"] = result
     db.session.commit()
 

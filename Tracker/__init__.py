@@ -139,17 +139,6 @@ class Problema(db.Model):
         data["username"] = self.username
         return data
 
-    def to_dict(self):
-        data = {}
-        data["sursa"] = self.sursa
-        data["problema"] = self.problema
-        data["idprob"] = self.idprob
-        data["url"] = self.url
-        data["scor"] = self.scor
-        data["data"] = self.data
-        data["username"] = self.username
-        return data
-
 
 @login_manager.user_loader
 def load_user(user_id):
