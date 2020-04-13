@@ -138,7 +138,7 @@ def _threadedupd(usernames, lock):
         except queue.Empty:
             break
         # Nu am sters inca
-        if "elem.sursa" in deleted:
+        if elem.sursa not in deleted:
             Problema.query.filter(Problema.username == usernames[site])\
                           .filter(Problema.sursa == site).delete()
             deleted[elem.sursa] = True
