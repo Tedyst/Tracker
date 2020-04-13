@@ -128,14 +128,22 @@ def _threadedupd(usernames, lock):
     for site in threads:
         site.join()
 
+    deleted = {}
+    for site in usernames:
+        Problema.query.filter(Problema.username == usernames[site])\
+                      .filter(Problema.sursa == site).delete()
     while True:
         try:
             elem = updatequeue.get_nowait()
         except queue.Empty:
             break
-        sursa = Problema.query.filter(Problema.data == elem.data).first()
-        if sursa is None:
-            db.session.add(elem)
+        # Nu am sters inca
+        if "elem.sursa" in deleted:
+            Problema.query.filter(Problema.username == usernames[site])\
+                          .filter(Problema.sursa == site).delete()
+            deleted[elem.sursa] = True
+
+        db.session.add(elem)
         updatequeue.task_done()
     db.session.commit()
     app.logger.debug("Committed to databsase")
