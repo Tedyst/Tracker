@@ -25,7 +25,7 @@ def index_username(nickname):
             status=404
         )
 
-        return render_template('index.html', SITES=SITES_ALL, user=user)
+        return redirect(url_for('index'))
     else:
         return render_template('login.html')
 
