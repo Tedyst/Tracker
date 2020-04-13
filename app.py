@@ -213,7 +213,7 @@ def api_users(nickname, site):
         dbutils.updateThreaded(user)
 
         return Response(json.dumps(response),
-                        status=303,
+                        status=200,
                         mimetype='application/json')
 
     # Pentru a specifica browserului ca este un raspuns JSON
@@ -260,7 +260,7 @@ def api_users_calendar(nickname):
         dbutils.updateThreaded(user)
 
         return Response(json.dumps(result),
-                        status=303,
+                        status=200,
                         mimetype='application/json')
 
     # Pentru a specifica browserului ca este un raspuns JSON

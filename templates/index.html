@@ -25,7 +25,7 @@
         {% endwith %}
         <div class="content">
             <div class="container-fluid">
-            {%if first_time %}
+            {% if first_time %}
                 <div class="alert alert-info alert-with-icon" data-notify="container">
                     <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
@@ -38,7 +38,6 @@
                     </span>
                 </div>
             {% else %}
-                {%if current_user.is_authenticated%}
                     <div class="row">
                         <div class="col-md-12" id="calendar-id">
                             <div class="card">
@@ -50,6 +49,9 @@
                                         <div class="row">
                                             <div class="col-md-5">
                                                 <div id="cal-heatmap1"></div>
+                                                <div class="text-center" id="loading-heatmap">
+                                                    {% include "loading.html" %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -81,8 +83,7 @@
                             </div>
                         </div>
                     </div>
-                {%endif%}
-            {%endif%}
+            {% endif %}
             </div>
         </div>
     </div>
@@ -231,9 +232,10 @@
                 sursemap[data_trim] = [];
             sursemap[data_trim].push(data["result"][i]);
         }
+        var element = document.getElementById("loading-heatmap");
+        element.parentNode.removeChild(element);
         responsiveCal( caloptions );
     });
-    
 
     $(window).resize(function() {
         if(this.resizeTO) clearTimeout(this.resizeTO);
