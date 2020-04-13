@@ -322,7 +322,7 @@ def register():
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
             surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
-            return render_template('index.html', first_time=True, data=surse)
+            return render_template('index.html', first_time=True, data=surse, user=user)
         return render_template('register.html')
 
 
