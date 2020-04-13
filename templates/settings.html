@@ -15,63 +15,129 @@
         {% endwith %}
         <div class="content">
             <div class="container-fluid">
+                {% if updated %}
+                    <div class="alert alert-info alert-with-icon" data-notify="container">
+                        <i class="material-icons" data-notify="icon">notifications</i>
+                        <span data-notify="message">Ai schimbat username-urile tale! Asteapta cateva secunde pana se descarca sursele tale!</span>
+                    </div>
+                {% endif %}
                 <div class="row">
                     <div class="col-lg-12">
-                        {% if updated %}
-                        <div class="alert alert-info alert-with-icon" data-notify="container">
-                            <i class="material-icons" data-notify="icon">notifications</i>
-                            <span data-notify="message">Ai schimbat username-urile tale! Asteapta cateva secunde pana se descarca sursele tale!</span>
-                        </div>
-                        {% endif %}
-                        <div class="card">
-                            <div class="card-header card-header-icon" data-background-color="purple">
-                                <i class="material-icons">settings</i>
-                            </div>
-                        <div class="col-md-8">
+                        <div class="col-md-4">
                             <div class="card">
-                                <div class="card-header">
-                                    <h4 class="card-title">Sites</h4>
+                                <div class="card-header card-header-icon" data-background-color="purple">
+                                    <i class="material-icons">settings</i>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-content">
+                                    <h3 class="card-title">Siteuri</h3>
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        <div class="col-md-4">
                                             <ul class="nav nav-pills nav-pills-rose flex-column" role="tablist">
                                                 {% for site in data %}
-                                                {% if loop.index == 1 %}
-                                                <li class="nav-item active">
-                                                {% else %}
-                                                <li class="nav-item">
-                                                {% endif %}
-                                                    <a class="nav-link" data-toggle="tab" href="#link{{3+loop.index}}" role="tablist">
-                                                        {{site}}
-                                                    </a>
-                                                </li>
+                                                    {% if loop.index == 1 %}
+                                                    <li class="nav-item active">
+                                                    {% else %}
+                                                    <li class="nav-item">
+                                                    {% endif %}
+                                                        <a class="nav-link" data-toggle="tab" href="#link{{3+loop.index}}" role="tablist">
+                                                            {{site}}
+                                                        </a>
+                                                    </li>
                                                 {%endfor%}
                                             </ul>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="tab-content">
                                                 {%for site in data%}
                                                 {% if loop.index == 1 %}
                                                     <div id="link{{3+loop.index}}" class="tab-pane active">
-                                                {% else %}
-                                                    <div id="link{{3+loop.index}}" class="tab-pane">
-                                                {% endif %}
-                                                        <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate" >
+                                                        <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate">
                                                             <div class="row">
-                                                                <label class="col-sm-6 col-form-label">Current Username:</label>
                                                                 <div class="col-xl-2">
-                                                                    <div class ="form-group bmd-form-group">
-                                                                        <input class="form-control" type="text" name="{{site}}" required="false" aria-required="true" placeholder="{{data[site]}}">
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-addon">
+                                                                            <i class="material-icons">face</i>
+                                                                        </span>
+                                                                        <div class="form-group label-floating">
+                                                                            <input type="text" class="form-control" id="{{site}}" name="{{site}}" value="{{data[site]}}">
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                <button class="btn btn-fill btn-rose" type="submit">Change username</button>
+                                                                <div class="footer text-center">
+                                                                    <button class="btn btn-fill btn-rose" type="submit">Schimba usernameul</button>
+                                                                </div>
                                                             </div>
                                                         </form>
                                                     </div>
+                                                {% else %}
+                                                    <div id="link{{3+loop.index}}" class="tab-pane">
+                                                        <form id="typeValidation" class="form-horizontal" action="/settings" method="POST" novalidate="novalidate">
+                                                            <div class="row">
+                                                                <div class="col-xl-2">
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-addon">
+                                                                            <i class="material-icons">face</i>
+                                                                        </span>
+                                                                        <div class="form-group label-floating">
+                                                                            <input type="text" class="form-control" id="{{site}}" name="{{site}}" value="{{data[site]}}">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="footer text-center">
+                                                                    <button class="btn btn-fill btn-rose" type="submit">Schimba usernameul</button>
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {% endif %}
+                                                        
                                                 {%endfor%}
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header card-header-icon" data-background-color="purple">
+                                    <i class="material-icons">settings</i>
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">Setari user</h3>
+                                    <div class="row">
+                                        <form method="POST" action="{{ url_for('usersettings') }}">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="material-icons">lock_outline</i>
+                                                </span>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label">Parola Veche</label>
+                                                    <input type="password" class="form-control" id="oldpassword" name="oldpassword">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="material-icons">email</i>
+                                                </span>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label">Adresa email</label>
+                                                    <input type="text" class="form-control" id="email" name="email" value="{{ current_user.email }}">
+                                                </div>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="material-icons">lock_outline</i>
+                                                </span>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label">Noua Parola</label>
+                                                    <input type="password" class="form-control" id="password" name="password">
+                                                </div>
+                                            </div>
+                                            <div class="footer text-center">
+                                                <button type="submit" class="btn btn-fill btn-rose">Aplica schimbarile</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

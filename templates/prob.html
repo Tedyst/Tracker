@@ -72,28 +72,27 @@
 
 {% block scripts %}
 <script defer type="text/javascript">
-    data = {{ data|safe }};
-    $(document).ready(function() {
+    $.getJSON('{{ url_for("api_users", nickname=user.nickname, site="all") }}', function(data) {
         let tr = document.getElementById("table-body");
-        for (var j = 0; j < data.length; j++) {
+        for (var j = 0; j < data["result"].length; j++) {
             var row = tr.insertRow(j);
             var cell0 = row.insertCell(0);
-            cell0.innerHTML = data[j]['problema'];
+            cell0.innerHTML = data["result"][j]['problema'];
             var cell1 = row.insertCell(1);
-            cell1.innerHTML = data[j]['scor'];
+            cell1.innerHTML = data["result"][j]['scor'];
             var cell2 = row.insertCell(2);
-            cell2.innerHTML = data[j]['idprob'];
+            cell2.innerHTML = data["result"][j]['idprob'];
             var cell3 = row.insertCell(3);
 
             var a = document.createElement('a');
-            var link = document.createTextNode(data[j]['sursa']); 
-            a.title = data[j]['sursa'];
-            a.href = data[j]['url'];
-            a.innerHTML = data[j]['sursa'];
+            var link = document.createTextNode(data["result"][j]['sursa']); 
+            a.title = data["result"][j]['sursa'];
+            a.href = data["result"][j]['url'];
+            a.innerHTML = data["result"][j]['sursa'];
             cell3.appendChild(a);
 
             var cell4 = row.insertCell(4);
-            cell4.innerHTML = data[j]['data'];
+            cell4.innerHTML = data["result"][j]['data'];
         }
 
         $('#datatables').DataTable({

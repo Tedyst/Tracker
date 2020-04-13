@@ -46,7 +46,7 @@
                                     <i class="material-icons">language</i>
                                 </div>
                                 <div class="card-content">
-                                        <h3 class="card-title">4 Month Heatmap</h3>
+                                        <h3 class="card-title">Activitatea din Ultimele Luni</h3>
                                         <div class="row">
                                             <div class="col-md-5">
                                                 <div id="cal-heatmap1"></div>
@@ -129,7 +129,6 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    var data = JSON.parse(`{{ data|safe }}`);
     var cal1data = {};
     var sursemap = {};
 
@@ -216,22 +215,25 @@
 
     }
 
-    for( i in data ) {
-        data_trim = data[i]["data"] - data[i]["data"] % 86400;
-        if(!cal1data.hasOwnProperty(data_trim))
-            cal1data[data_trim] = 0;
-        cal1data[data_trim] += 1;
-        if(!sursemap.hasOwnProperty(data_trim))
-            sursemap[data_trim] = [];
-        sursemap[data_trim].push(data[i]);
-    }
-
     var up = new Date();
     var year = up.getFullYear();
     var month = up.getMonth()-3;
     var dwn = new Date(year,month);
     
-    responsiveCal( caloptions );
+
+    $.getJSON('{{ url_for("api_users", nickname=user.nickname, site="all") }}', function(data) {
+        for( i in data["result"] ) {
+            data_trim = data["result"][i]["data"] - data["result"][i]["data"] % 86400;
+            if(!cal1data.hasOwnProperty(data_trim))
+                cal1data[data_trim] = 0;
+            cal1data[data_trim] += 1;
+            if(!sursemap.hasOwnProperty(data_trim))
+                sursemap[data_trim] = [];
+            sursemap[data_trim].push(data["result"][i]);
+        }
+        responsiveCal( caloptions );
+    });
+    
 
     $(window).resize(function() {
         if(this.resizeTO) clearTimeout(this.resizeTO);
@@ -248,16 +250,12 @@
 <script>
         $('#datatables').DataTable({
             pagingType: "full_numbers",
-            lengthMenu: [
-                [15, 50, 100, -1],
-                [15, 50, 100, "All"]
-            ],
             order: [[ 4, "desc" ]],
             responsive: true,
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Cauta prin surse trimise",
-            }
+            searching: false,
+            ordering:  false,
+            bLengthChange: false,
+            bInfo: false
         });
 
         var table = $('#datatables').DataTable();

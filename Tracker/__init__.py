@@ -4,9 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 import threading
 import hashlib
 from sqlalchemy.orm.attributes import set_attribute, flag_modified
-import json
+from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
+import logging
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -17,6 +18,14 @@ app = Flask(__name__,
 app.config['SECRET_KEY'] = b",\x93e9\xe9y'P}>\x92\x8f\xc4\x80\xa9\x88"
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.logger.setLevel(logging.INFO)
+
+# Debug mode
+if app.debug:
+    app.config['DEBUG_TB_PROFILER_ENABLED'] = True
+    toolbar = DebugToolbarExtension(app)
+    app.logger.setLevel(logging.DEBUG)
+
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
@@ -123,17 +132,6 @@ class Problema(db.Model):
         self.url = url
 
     def __json__(self):
-        data = {}
-        data["sursa"] = self.sursa
-        data["problema"] = self.problema
-        data["idprob"] = self.idprob
-        data["url"] = self.url
-        data["scor"] = self.scor
-        data["data"] = self.data
-        data["username"] = self.username
-        return data
-
-    def to_dict(self):
         data = {}
         data["sursa"] = self.sursa
         data["problema"] = self.problema

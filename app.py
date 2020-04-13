@@ -11,24 +11,21 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        surse = json.dumps([i.__json__() for i in dbutils.getSurse(current_user, "all")])
-        return render_template('index.html', SITES=SITES_ALL, data=surse)
+        return render_template('index.html', SITES=SITES_ALL, user=current_user)
     else:
         return render_template('login.html')
 
 
 @app.route('/index/<nickname>')
 def index_username(nickname):
-    if current_user.is_authenticated:
-        user = dbutils.getUser(nickname)
-        if user is None:
-            return app.response_class(
-                response=render_template('404.html'),
-                status=404
-            )
+    user = dbutils.getUser(nickname)
+    if user is None:
+        return app.response_class(
+            response=render_template('404.html'),
+            status=404
+        )
 
-        surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
-        return render_template('index.html', SITES=SITES_ALL, data=surse)
+        return render_template('index.html', SITES=SITES_ALL, user=user)
     else:
         return render_template('login.html')
 
@@ -84,32 +81,39 @@ def prob_user(nickname):
 
     # In cazul in care userul cerut nu exista
     if user is None:
+        app.logger.debug("Nu am gasit user cu nickname", nickname)
         return app.response_class(
             response=render_template('404.html'),
             status=404
         )
 
-    # Get user's problems
-    data = dbutils.getSurse(user, "all")
-    result = []
-    for i in data:
-        result.append(i.to_dict())
-    result = json.dumps(result)
-    db.session.commit()
+    app.logger.debug("Gasit username cu nickname %s", nickname)
 
     if dbutils.needsUpdate(user, "all"):
+        app.logger.debug("%s are nevoie de update de surse", user.nickname)
         dbutils.updateThreaded(user)
 
         # Return old data to the user before we finish updating
         return render_template('prob.html',
-                               data=result,
                                updating=True,
                                user=user)
 
     return render_template('prob.html',
-                           data=result,
                            updating=False,
                            user=user)
+
+
+@app.route('/usersettings', methods=['POST'])
+@login_required
+def usersettings():
+    data = request.form
+    if current_user.check_password(data['oldpassword']):
+        app.logger.info("Schimat parola/email pentru %s", current_user.nickname)
+        current_user.email = data['email']
+        current_user.set_password(data['password'])
+    else:
+        app.logger.info("Parola veche gresita pentru %s", current_user.nickname)
+    return redirect(url_for('settings'))
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -117,18 +121,12 @@ def prob_user(nickname):
 def settings():
     site_names = {}
     if request.method == 'GET':
-        if current_user.is_authenticated:
-            # Ia numele user-ului de pe site-uri
-            user = dbutils.getUser(current_user.nickname)
-            for site in SITES:
-                if user[site] is None:
-                    site_names[site] = "None set"
-                else:
-                    site_names[site] = user[site]
-
-            # site_names = json.dumps(site_names)
-            return render_template('settings.html', data=site_names, edit=False)
-        return redirect(url_for('index'))
+        for site in SITES:
+            if current_user[site] is None:
+                site_names[site] = "None set"
+            else:
+                site_names[site] = current_user[site]
+        return render_template('settings.html', data=site_names, edit=False)
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -136,7 +134,6 @@ def settings():
             site_names[site] = "None set"
         else:
             site_names[site] = user[site]
-
 
     data = request.form
     for i in SITES:
@@ -208,7 +205,7 @@ def api_users(nickname, site):
     data = dbutils.getSurse(user, site)
     result = []
     for i in data:
-        result.append(i.to_dict())
+        result.append(i.__json__())
     response["result"] = result
     db.session.commit()
 

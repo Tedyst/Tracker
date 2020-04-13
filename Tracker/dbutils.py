@@ -1,7 +1,7 @@
 import importlib
 from typing import Iterable
 import time
-from Tracker import db, Problema, User, SITES
+from Tracker import db, Problema, User, SITES, app
 from Tracker.utils import validUsername
 from threading import Thread
 import queue
@@ -34,7 +34,7 @@ def addSurse(probleme):
 
 def updateSurse(sursa, username):
     mod = importlib.import_module("Tracker.sites." + sursa)
-    print("Updating surse for ", username, " from site ", sursa)
+    app.logger.debug("Updating surse for user %s from site %s", username, sursa)
     if mod.testUser(username):
         probleme = mod.getUser(username)
         for i in probleme:
@@ -65,14 +65,24 @@ def getUser(nickname):
 
 def updateUsername(user: User, username, site):
     if site not in SITES:
+        app.logger.debug("Site-ul %s nu exista",
+                         site)
         return
     if not validUsername(username, site):
+        app.logger.debug("Username %s nu exista pe site-ul %s",
+                         username, site)
         return
+    app.logger.info("Schimbat username pentru site %s, user %s in %s",
+                    site, user.nickname, username)
     user[site] = username
+    user["last_" + site] = None
     updateThreaded(user)
 
 
 def needsUpdate(user: User, site):
+    if app.debug:
+        app.logger.debug("Fortam update pentu ca avem DEBUG mode.")
+        return True
     if site == "all":
         for site in SITES:
             if user[site] is not None:
@@ -128,5 +138,5 @@ def _threadedupd(usernames, lock):
             db.session.add(elem)
         updatequeue.task_done()
     db.session.commit()
-    print("Committed to databsase")
+    app.logger.debug("Committed to databsase")
     lock.release()

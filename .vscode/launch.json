@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Flask",
+            "name": "Flask Debug",
             "type": "python",
             "request": "launch",
             "module": "flask",
@@ -21,12 +21,29 @@
             "jinja": true
         },
         {
+            "name": "Flask Only Run",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app.py",
+                "FLASK_ENV": "production"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--host",
+                "0.0.0.0"
+            ],
+            "jinja": true
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/Tracker"
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

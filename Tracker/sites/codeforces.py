@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import NavigableString 
 import datetime
 import time
 from Tracker import Problema
@@ -31,14 +32,13 @@ def _getUser(user, page) -> [Problema]:
 
             # Alta incercare de scor
             scor = ""
-            try:
-                scor = sumb.contents[11].contents[1].contents[0].contents[0]
-                try:
-                    scor += sumb.contents[11].contents[1].contents[0].contents[1].contents[0]
-                except IndexError:
-                    pass
-            except AttributeError:
+            if type(sumb.contents[11].contents[1].contents[0]) == NavigableString:
                 scor = sumb.contents[11].contents[1].contents[0]
+            elif len(sumb.contents[11].contents[1].contents[0].contents) == 1:
+                scor = sumb.contents[11].contents[1].contents[0].contents[0]
+            else:
+                scor = sumb.contents[11].contents[1].contents[0].contents[0]
+                scor += sumb.contents[11].contents[1].contents[0].contents[1].contents[0]
 
             # extrage data
             data = sumb.contents[3].contents[1].contents[0]
@@ -81,6 +81,6 @@ def getUser(user) -> [Problema]:
 
 
 def testUser(user):
-    if _getNumberOfPages(user) == None:
+    if _getNumberOfPages(user) is None:
         return False
     return True
