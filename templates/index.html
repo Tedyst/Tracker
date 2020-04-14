@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
                                 <div class="card-content">
-                                    <h3 class="card-title">Un grafic</h3>
+                                    <h3 class="card-title">Numarul de incercari pe problema rezolvata</h3>
                                     <div id="colouredRoundedChart" class="ct-chart"></div>
                                 </div>
                             </div>
@@ -265,18 +265,50 @@
         $('.card .material-datatables label').addClass('form-group');
 </script>
 <script type="text/javascript">
-    new Chartist.Line('.ct-chart', {
-  labels: ['a','b','c','d','e'],
-  series: [
-    [12, 9, 7, 8, 5],
-    [2, 1, 3.5, 7, 3],
-    [1, 3, 4, 5, 6]
-  ]
-}, {
-  fullWidth: true,
-  chartPadding: {
-    right: 40
-  }
-});
+
+var date = {
+    series: []
+};
+$.getJSON('{{url_for("api_grafic1", nickname = user.nickname)}}', function(data){
+    var len = data.length;
+    var nrOfLabels = 0;
+    var maxLabels=25;
+    var line = []
+    while(nrOfLabels <= maxLabels)
+    {
+        if(data[len-1].solved == true)
+        {
+            var obj = {
+                x: nrOfLabels,
+                y: data[len-1].attempts
+            }
+            line.push(obj);
+            ++nrOfLabels;
+        }
+        --len;
+    }
+    date.series.push(line);
+    new Chartist.Line('.ct-chart', date, {
+    seriesBarDistance:10,
+    fullWidth: true,
+    high: 20,
+    low: 0,
+    height:'250px',
+    axisX:
+    {
+        type: Chartist.AutoScaleAxis,
+        onlyInteger: true
+    },   
+    axisY:{
+        onlyInteger: true,
+        offset:20
+    }, 
+    chartPadding: {
+        right: 40
+    }
+    });
+})
+console.log(date);
+
 </script>
 {% endblock %}
