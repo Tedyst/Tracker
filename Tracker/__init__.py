@@ -8,6 +8,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
+import os
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -15,7 +16,7 @@ SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 app = Flask(__name__,
             template_folder='../templates',
             static_folder="../static")
-app.config['SECRET_KEY'] = b",\x93e9\xe9y'P}>\x92\x8f\xc4\x80\xa9\x88"
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY") or "key"
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger.setLevel(logging.INFO)
@@ -29,7 +30,10 @@ if app.debug:
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
+    if os.getenv("APP_ENV") == "docker":
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/data.db'
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
