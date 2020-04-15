@@ -20,7 +20,7 @@ COPY requirements.txt .
 
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN update-ca-certificates -f -v && mkdir /data
+RUN update-ca-certificates -f -v
 
 ENV APP_ENV=docker
 
