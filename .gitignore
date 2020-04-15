@@ -5,3 +5,4 @@ db/
 settings.json
 data.db
 .pytest_cache
+deploy/
