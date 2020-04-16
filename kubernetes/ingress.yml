@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: tracker
+  namespace: tedy
+spec:
+  rules:
+    - host: tracker.stoicatedy.ovh
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: tracker
+              servicePort: 5000
