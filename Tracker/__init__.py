@@ -62,7 +62,6 @@ class User(db.Model):
     # Am facut asta ca sa putem accesa usernameurile
     # ca user["pbinfo"] si user.pbinfo
     def __getitem__(self, key):
-        db.session.commit()
         try:
             return getattr(self, key)
         except Exception as e:
@@ -70,7 +69,6 @@ class User(db.Model):
             return None
 
     def __setitem__(self, key, value):
-        db.session.commit()
         set_attribute(self, key, value)
         flag_modified(self, key)
         db.session.add(self)
@@ -104,7 +102,7 @@ class User(db.Model):
     def usernames(self):
         result = {}
         for i in SITES:
-            result[i] = self[i]
+            result[i] = self.__getitem__(i)
         return result
 
 
@@ -136,14 +134,15 @@ class Problema(db.Model):
         self.url = url
 
     def __json__(self):
-        data = {}
-        data["sursa"] = self.sursa
-        data["problema"] = self.problema
-        data["idprob"] = self.idprob
-        data["url"] = self.url
-        data["scor"] = self.scor
-        data["data"] = self.data
-        data["username"] = self.username
+        data = {
+            "sursa": self.sursa,
+            "problema": self.problema,
+            "idprob": self.idprob,
+            "url": self.url,
+            "scor": self.scor,
+            "data": self.data,
+            "username": self.username
+        }
         return data
 
 

@@ -169,6 +169,12 @@ def prob():
 
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
+    # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
+    debug = False
+    if site == "debug" and app.debug is True:
+        site = "all"
+        debug = True
+
     # In cazul in care site-ul cerut nu exista
     if site not in SITES_ALL:
         error = {
@@ -211,11 +217,15 @@ def api_users(nickname, site):
 
     if response["updating"]:
         dbutils.updateThreaded(user)
+        if debug:
+            return render_template('debug.html', data=response)
 
         return Response(json.dumps(response),
                         status=200,
                         mimetype='application/json')
 
+    if debug:
+        return render_template('debug.html', data=response)
     # Pentru a specifica browserului ca este un raspuns JSON
     return app.response_class(
         response=json.dumps(response),

@@ -5,6 +5,7 @@ from Tracker import db, Problema, User, SITES, app
 from Tracker.utils import validUsername
 from threading import Thread
 import queue
+from sqlalchemy.orm import raiseload
 updatequeue = queue.Queue()
 
 
@@ -14,11 +15,13 @@ def getSurse(user: User, site) -> Iterable[Problema]:
         for i in SITES:
             if user[i] is not None:
                 result += Problema.query.filter(Problema.username == user[i])\
-                                        .filter(Problema.sursa == i).all()
+                                        .filter(Problema.sursa == i)\
+                                        .options(raiseload('*')).all()
         return result
     else:
         q = Problema.query.filter(Problema.username == user[site])\
-                                .filter(Problema.sursa == site).all()
+                          .options(raiseload('*'))\
+                          .filter(Problema.sursa == site).all()
     return q
 
 
