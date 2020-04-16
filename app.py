@@ -25,9 +25,9 @@ def index_username(nickname):
             status=404
         )
 
-        return redirect(url_for('index'))
-    else:
         return render_template('login.html')
+    else:
+        return render_template('index.html', SITES=SITES_ALL, user=user)
 
 
 @app.route('/api/users/<user>')
