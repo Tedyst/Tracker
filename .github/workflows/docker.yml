@@ -39,3 +39,10 @@ jobs:
             --platform linux/amd64,linux/arm64,linux/arm/v7 \
             -t tedyst/tracker \
             --push .
+      - 
+        name: Deploy using keel
+        uses: jaapio/keelsh-deploy@master
+        with:
+          keelBaseUrl: https://keel.stoicatedy.ovh
+          image: 'tedyst/tracker'
+          tag: latest
