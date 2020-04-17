@@ -29,6 +29,7 @@ if app.debug:
     toolbar = DebugToolbarExtension(app)
     app.logger.setLevel(logging.DEBUG)
     if os.getenv("APP_ENV") == "docker":
+        app.logger.debug("Enabled vscode debugger")
         ptvsd.enable_attach()
 
 if "pytest" in sys.modules:

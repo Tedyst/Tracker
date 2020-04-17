@@ -22,6 +22,9 @@ spec:
       containers:
         - name: tracker
           imagePullPolicy: Always
+          env:
+            - name: "FLASK_DEBUG"
+              value: "1"
           resources:
             limits:
               cpu: "1000m"
@@ -32,6 +35,7 @@ spec:
           image: tedyst/tracker:latest
           ports:
             - containerPort: 5000
+            - containerPort: 5678
           volumeMounts:
             - name: data-volume
               mountPath: /data
