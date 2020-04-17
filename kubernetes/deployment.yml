@@ -22,9 +22,6 @@ spec:
       containers:
         - name: tracker
           imagePullPolicy: Always
-          env:
-            - name: "FLASK_DEBUG"
-              value: "1"
           resources:
             limits:
               cpu: "1000m"
