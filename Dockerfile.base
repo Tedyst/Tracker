@@ -24,4 +24,4 @@ RUN update-ca-certificates -f -v
 
 ENV APP_ENV=docker
 
-CMD ["flask", "run", "--host", "0.0.0.0"]
+CMD ["flask", "run", "--host", "0.0.0.0", "--no-reload", "--no-debugger"]

@@ -23,14 +23,15 @@ app.config['SQLALCHEMY_ECHO'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger.setLevel(logging.INFO)
 
+if os.getenv("APP_ENV") == "docker":
+    app.logger.info("Enabled vscode debugger")
+    ptvsd.enable_attach()
+
 # Debug mode
 if app.debug:
     app.config['DEBUG_TB_PROFILER_ENABLED'] = True
     toolbar = DebugToolbarExtension(app)
     app.logger.setLevel(logging.DEBUG)
-    if os.getenv("APP_ENV") == "docker":
-        app.logger.debug("Enabled vscode debugger")
-        ptvsd.enable_attach()
 
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
