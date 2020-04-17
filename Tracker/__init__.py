@@ -9,6 +9,8 @@ from flask_login import LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 import os
+import ptvsd
+
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
 
@@ -26,6 +28,8 @@ if app.debug:
     app.config['DEBUG_TB_PROFILER_ENABLED'] = True
     toolbar = DebugToolbarExtension(app)
     app.logger.setLevel(logging.DEBUG)
+    if os.getenv("APP_ENV") == "docker":
+        ptvsd.enable_attach()
 
 if "pytest" in sys.modules:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
