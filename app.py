@@ -30,6 +30,22 @@ def index_username(nickname):
         return render_template('index.html', SITES=SITES_ALL, user=user)
 
 
+@app.route('/api/users')
+def api_getuserlist():
+    # Pentru a creea un raspuns folosind JSON
+    users = User.query.all()
+    response = []
+    for user in users:
+        response.append(user.nickname)
+
+    # Pentru a specifica browserului ca este un raspuns JSON
+    return app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @app.route('/api/users/<user>')
 def api_getuser(user):
     # In cazul in care userul cerut nu exista
