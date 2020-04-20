@@ -11,7 +11,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html')
+        return render_template('pages/index.html')
     else:
         return redirect(url_for('login'))
 
@@ -19,7 +19,7 @@ def index():
 @app.route('/profile')
 def profile():
     if current_user.is_authenticated:
-        return render_template('profile.html',
+        return render_template('pages/profile.html',
                                SITES=SITES_ALL,
                                user=current_user)
     else:
@@ -37,7 +37,9 @@ def profile_username(nickname):
 
         return render_template('notlogged/login.html')
     else:
-        return render_template('profile.html', SITES=SITES_ALL, user=user)
+        return render_template('pages/profile.html',
+                               SITES=SITES_ALL,
+                               user=user)
 
 
 @app.route('/api/users')
@@ -120,13 +122,11 @@ def prob_user(nickname):
         dbutils.updateThreaded(user)
 
         # Return old data to the user before we finish updating
-        return render_template('prob.html',
+        return render_template('pages/probleme.html',
                                updating=True,
                                user=user)
 
-    return render_template('prob.html',
-                           updating=False,
-                           user=user)
+    return render_template('pages/probleme.html', user=user)
 
 
 @app.route('/usersettings', methods=['POST'])
@@ -134,11 +134,13 @@ def prob_user(nickname):
 def usersettings():
     data = request.form
     if current_user.check_password(data['oldpassword']):
-        app.logger.info("Schimat parola/email pentru %s", current_user.nickname)
+        app.logger.info("Schimat parola/email pentru %s",
+                        current_user.nickname)
         current_user.email = data['email']
         current_user.set_password(data['password'])
     else:
-        app.logger.info("Parola veche gresita pentru %s", current_user.nickname)
+        app.logger.info("Parola veche gresita pentru %s",
+                        current_user.nickname)
     return redirect(url_for('settings'))
 
 
@@ -152,7 +154,9 @@ def settings():
                 site_names[site] = "None set"
             else:
                 site_names[site] = current_user[site]
-        return render_template('settings.html', data=site_names, edit=False)
+        return render_template('pages/settings.html',
+                               data=site_names,
+                               edit=False)
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -174,7 +178,9 @@ def settings():
             pass
     if current_user.lock.locked():
         dbutils.updateThreaded(current_user)
-        return render_template('settings.html', updated=True, data=site_names)
+        return render_template('pages/settings.html',
+                               updated=True,
+                               data=site_names)
 
     user = dbutils.getUser(current_user.nickname)
     for site in SITES:
@@ -183,7 +189,9 @@ def settings():
         else:
             site_names[site] = user[site]
 
-    return render_template('settings.html', updated=True, data=site_names)
+    return render_template('pages/settings.html',
+                           updated=True,
+                           data=site_names)
 
 
 @app.route('/prob', methods=['GET', 'POST'])
@@ -265,10 +273,11 @@ def api_users(nickname, site):
         mimetype='application/json'
     )
 
+
 @app.route('/api/grafic1/<nickname>')
 def api_grafic1(nickname):
     user = User.query.filter(User.nickname == nickname).first()
-    
+
     if user is None:
         error = {
             "message": None
@@ -279,38 +288,38 @@ def api_grafic1(nickname):
             status=404,
             mimetype='application/json'
         )
-    
-    data = dbutils.getSurse(user,"all")
+
+    data = dbutils.getSurse(user, "all")
     result = []
     for subm in data:
         prob = None
-        for i,sub in enumerate(result):
+        for i, sub in enumerate(result):
             if sub["name"] == subm.problema:
                 if result[i]["solved"] is False:
-                    result[i]["attempts"]+=1
+                    result[i]["attempts"] += 1
                     if subm.scor == "100" or subm.scor == "Accepted":
-                        result[i]["solved"]=True
-                        result[i]["data"]=subm.data
+                        result[i]["solved"] = True
+                        result[i]["data"] = subm.data
                     else:
-                        result[i]["solved"]=False
+                        result[i]["solved"] = False
                 elif result[i]["data"] >= subm.data and not (subm.scor == "100" or subm.scor == "Accepted"):
-                    result[i]["attempts"]+=1
+                    result[i]["attempts"] += 1
 
                 prob = sub
                 break
 
         if prob is None:
-            temp={}
+            temp = {}
             temp["name"] = subm.problema
             temp["data"] = subm.data
-            temp["attempts"]=1
+            temp["attempts"] = 1
             if subm.scor == "100" or subm.scor == "Accepted":
-                temp["solved"]=True
+                temp["solved"] = True
             else:
-                temp["solved"]=False
+                temp["solved"] = False
             result.append(temp)
-            
-    result = sorted(result, key = lambda k: k['data'])
+
+    result = sorted(result, key=lambda k: k['data'])
     db.session.commit()
 
     if dbutils.needsUpdate(user, "all"):
@@ -319,13 +328,13 @@ def api_grafic1(nickname):
         return Response(json.dumps(result),
                         status=200,
                         mimetype='application/json')
-    
+
     return app.response_class(
         response=json.dumps(result),
         status=200,
         mimetype='application/json'
     )
-    
+
 
 @app.route('/api/calendar/<nickname>')
 def api_users_calendar(nickname):
@@ -350,7 +359,8 @@ def api_users_calendar(nickname):
     mem = []
     result = {}
     for i in data:
-        timp = int(datetime.fromtimestamp(i.data).replace(hour=0, minute=0, second=0).timestamp())
+        timp = int(datetime.fromtimestamp(i.data).replace(
+            hour=0, minute=0, second=0).timestamp())
         try:
             if i.idprob not in mem:
                 result[timp] += 1
@@ -422,9 +432,11 @@ def register():
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
         if user is None:
-            user = dbutils.createUser(data['name'], data['password'], data['email'])
+            user = dbutils.createUser(
+                data['name'], data['password'], data['email'])
             login_user(user)
-            surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
+            surse = json.dumps([i.__json__()
+                                for i in dbutils.getSurse(user, "all")])
             return render_template('profile.html', first_time=True, data=surse, user=user)
         return render_template('notlogged/register.html')
 
@@ -434,6 +446,7 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 if __name__ == "__main__":
     app.run(threaded=True, debug=True)
