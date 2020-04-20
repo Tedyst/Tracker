@@ -5,7 +5,7 @@ from flask import Response
 import datetime
 
 
-@api_blueprint.route('/api/calendar/<nickname>')
+@api_blueprint.route('/calendar/<nickname>')
 def users_calendar(nickname):
     user = User.query.filter(User.nickname == nickname).first()
     # In cazul in care userul cerut nu exista

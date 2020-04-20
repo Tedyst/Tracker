@@ -4,7 +4,7 @@ from Tracker.routes.api import api_blueprint
 from flask import render_template, request, Response
 
 
-@api_blueprint.route('/api/users')
+@api_blueprint.route('/users')
 def getuserlist():
     # Pentru a creea un raspuns folosind JSON
     users = User.query.all()
@@ -20,7 +20,7 @@ def getuserlist():
     )
 
 
-@api_blueprint.route('/api/users/<user>')
+@api_blueprint.route('/users/<user>')
 def getuser(user):
     # In cazul in care userul cerut nu exista
     if not dbutils.userExists(user):
@@ -65,7 +65,7 @@ def getuser(user):
     )
 
 
-@api_blueprint.route('/api/users/<nickname>/<site>')
+@api_blueprint.route('/users/<nickname>/<site>')
 def users(nickname, site):
     # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
     debug = False

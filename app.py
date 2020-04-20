@@ -5,7 +5,7 @@ import Tracker.routes as routes  # noqa: F401
 
 app.register_blueprint(routes.pages.pages_blueprint, url_prefix="")
 app.register_blueprint(routes.auth.auth_blueprint, url_prefix="")
-app.register_blueprint(routes.api.api_blueprint, url_prefix="")
+app.register_blueprint(routes.api.api_blueprint, url_prefix="/api")
 
 
 @app.errorhandler(404)
