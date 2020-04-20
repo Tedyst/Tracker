@@ -397,7 +397,8 @@ def login():
         data = request.form
         try:
             if not data['email'] or not data['password']:
-                return render_template('notlogged/login.html', failedlogin=True)
+                return render_template('notlogged/login.html',
+                                       failedlogin=True)
         except KeyError:
             return render_template('notlogged/login.html')
         remember = False
@@ -410,7 +411,8 @@ def login():
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
             if user is None:
-                return render_template('notlogged/login.html', failedlogin=True)
+                return render_template('notlogged/login.html',
+                                       failedlogin=True)
         if user.check_password(data['password']):
             login_user(user, remember=remember)
             return redirect(url_for('index'))
@@ -437,7 +439,9 @@ def register():
             login_user(user)
             surse = json.dumps([i.__json__()
                                 for i in dbutils.getSurse(user, "all")])
-            return render_template('profile.html', first_time=True, data=surse, user=user)
+            return render_template('profile.html', first_time=True,
+                                   data=surse,
+                                   user=user)
         return render_template('notlogged/register.html')
 
 
