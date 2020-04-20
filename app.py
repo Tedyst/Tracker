@@ -190,6 +190,7 @@ def api_users(nickname, site):
     if site == "debug" and app.debug is True:
         site = "all"
         debug = True
+    load_since = request.args.get('load_since')
 
     # In cazul in care site-ul cerut nu exista
     if site not in SITES_ALL:
@@ -224,7 +225,12 @@ def api_users(nickname, site):
         "result": {}
     }
 
-    data = dbutils.getSurse(user, site)
+    if load_since is None:
+        app.logger.debug("Incaracam toate sursele...")
+        data = dbutils.getSurse(user, site)
+    else:
+        app.logger.debug("Incarcam sursele mai noi decat %s", load_since)
+        data = dbutils.getSurseSince(user, site, load_since)
     result = []
     for i in data:
         result.append(i.__json__())

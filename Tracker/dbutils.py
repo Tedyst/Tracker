@@ -25,6 +25,24 @@ def getSurse(user: User, site) -> Iterable[Problema]:
     return q
 
 
+def getSurseSince(user: User, site, since) -> Iterable[Problema]:
+    if site == "all":
+        result = []
+        for i in SITES:
+            if user[i] is not None:
+                result += Problema.query.filter(Problema.username == user[i])\
+                                        .filter(Problema.sursa == i)\
+                                        .filter(Problema.data >= since)\
+                                        .options(raiseload('*')).all()
+        return result
+    else:
+        q = Problema.query.filter(Problema.username == user[site])\
+                          .options(raiseload('*'))\
+                          .filter(Problema.data >= since)\
+                          .filter(Problema.sursa == site).all()
+    return q
+
+
 def addSurse(probleme):
     for i in probleme:
         if type(i) != Problema:
