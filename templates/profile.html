@@ -11,118 +11,103 @@
     {% endif %}
 {% endblock %}
 {% block content %}
-
-
-<div class="wrapper">
-    {% with page='profile' %}
-        {% include 'sidebar.html' %}
-    {% endwith %}
-    
-    <div class="main-panel">
-        
-        {% with title="Pagina Principala" %}
-            {% include 'navbar.html' %}
-        {% endwith %}
-        <div class="content">
-            <div class="container-fluid">
-            {% if first_time %}
-                <div class="alert alert-info alert-with-icon" data-notify="container">
-                    <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
-                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-                        <i class="material-icons">close</i>
-                    </button>
-                    <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
-                    <span data-notify="message">
-                        Pentru a putea sa-ti vezi sursele, te rugam introdu-ti username-urile de pe site-urile
-                        listate in meniul  "Settings"
-                    </span>
+    <div class="container-fluid">
+    {% if first_time %}
+        <div class="alert alert-info alert-with-icon" data-notify="container">
+            <i class="alert alert-info alert-with-icon" data-notify="icon">notifications</i>
+            <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                <i class="material-icons">close</i>
+            </button>
+            <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
+            <span data-notify="message">
+                Pentru a putea sa-ti vezi sursele, te rugam introdu-ti username-urile de pe site-urile
+                listate in meniul  "Settings"
+            </span>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-md-12" id="calendar-id">
+                <div class="card">
+                    <div class="card-header card-header-icon " data-background-color="green">
+                        <i class="material-icons">language</i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Activitatea din Ultimele Luni</h3>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div id="cal-heatmap1"></div>
+                                <div class="text-center" id="loading-heatmap">
+                                    {% include "loading.html" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            {% else %}
-                    <div class="row">
-                        <div class="col-md-12" id="calendar-id">
-                            <div class="card">
-                                <div class="card-header card-header-icon " data-background-color="green">
-                                    <i class="material-icons">language</i>
-                                </div>
-                                <div class="card-content">
-                                        <h3 class="card-title">Activitatea din Ultimele Luni</h3>
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <div id="cal-heatmap1"></div>
-                                                <div class="text-center" id="loading-heatmap">
-                                                    {% include "loading.html" %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header card-header-icon card-header-info" data-background-color="red">
-                                    <div class="card-icon">
-                                        <i class="material-icons">show_chart</i>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <h3 class="card-title">Numarul de incercari per problema rezolvata</h3>
-                                    <div id="colouredRoundedChart" class="ct-chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header card-header-icon" data-background-color="purple">
-                                    <i class="material-icons">show_chart</i>
-                                </div>
-                                <div class="card-content">
-                                    <h3 class="card-title">Alt grafic</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            {% endif %}
             </div>
         </div>
-    </div>
-    <div class="modal fade" id="popupProbleme" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-notice">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                            <i class="material-icons">clear</i>
-                        </button>
-                        <h5 class="modal-title" id="myModalLabel">asd</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="material-datatables">
-                            <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th>Numele problemei</th>
-                                        <th>Scorul obtinut</th>
-                                        <th>ID Problemei</th>
-                                        <th>Site</th>
-                                        <th>Data</th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Numele problemei</th>
-                                        <th>Scorul obtinut</th>
-                                        <th>ID Problemei</th>
-                                        <th>Site</th>
-                                        <th>Data</th>
-                                    </tr>
-                                </tfoot>
-                                <tbody id="table-body"></tbody>
-                            </table>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-info" data-background-color="red">
+                        <div class="card-icon">
+                            <i class="material-icons">show_chart</i>
                         </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Numarul de incercari per problema rezolvata</h3>
+                        <div id="colouredRoundedChart" class="ct-chart"></div>
                     </div>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header card-header-icon" data-background-color="purple">
+                        <i class="material-icons">show_chart</i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">Alt grafic</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+    <div class="modal fade" id="popupProbleme" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-notice">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        <i class="material-icons">clear</i>
+                    </button>
+                    <h5 class="modal-title" id="myModalLabel">asd</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="material-datatables">
+                        <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Numele problemei</th>
+                                    <th>Scorul obtinut</th>
+                                    <th>ID Problemei</th>
+                                    <th>Site</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th>Numele problemei</th>
+                                    <th>Scorul obtinut</th>
+                                    <th>ID Problemei</th>
+                                    <th>Site</th>
+                                    <th>Data</th>
+                                </tr>
+                            </tfoot>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
