@@ -41,6 +41,22 @@
                 </li>
             {% endif %}
 
+            {% if page == 'profile' %}
+                <li class="active">
+                    <a href="{{ url_for('profile') }}">
+                        <i class="material-icons">dashboard</i>
+                        <p>Profilul meu</p>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('profile') }}">
+                    <i class="material-icons">dashboard</i>
+                    <p>Profilul meu</p>
+                    </a>
+                </li>
+            {% endif %}
+
             {% if not current_user.is_authenticated %}
                 <li>
                     <a href="{{ url_for('login') }}">
