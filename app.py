@@ -13,7 +13,7 @@ def index():
     if current_user.is_authenticated:
         return render_template('index.html')
     else:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route('/profile')
@@ -23,7 +23,7 @@ def profile():
                                SITES=SITES_ALL,
                                user=current_user)
     else:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route('/profile/<nickname>')
@@ -35,7 +35,7 @@ def profile_username(nickname):
             status=404
         )
 
-        return render_template('login.html')
+        return render_template('notlogged/login.html')
     else:
         return render_template('profile.html', SITES=SITES_ALL, user=user)
 
@@ -382,14 +382,14 @@ def page_not_found(e):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html', failedlogin=False)
+        return render_template('notlogged/login.html', failedlogin=False)
     elif request.method == 'POST':
         data = request.form
         try:
             if not data['email'] or not data['password']:
-                return render_template('login.html', failedlogin=True)
+                return render_template('notlogged/login.html', failedlogin=True)
         except KeyError:
-            return render_template('login.html')
+            return render_template('notlogged/login.html')
         remember = False
         try:
             if data['remember'] == 'on':
@@ -400,24 +400,24 @@ def login():
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
             if user is None:
-                return render_template('login.html', failedlogin=True)
+                return render_template('notlogged/login.html', failedlogin=True)
         if user.check_password(data['password']):
             login_user(user, remember=remember)
             return redirect(url_for('index'))
-        return render_template('login.html', failedlogin=True)
+        return render_template('notlogged/login.html', failedlogin=True)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('notlogged/register.html')
     elif request.method == 'POST':
         data = request.form
         try:
             if not data['email'] or not data['password'] or not data['name']:
-                return render_template('register.html')
+                return render_template('notlogged/register.html')
         except KeyError:
-            return render_template('register.html')
+            return render_template('notlogged/register.html')
         user = User.query.filter(User.email == data['email']).first()
         if user is None:
             user = User.query.filter(User.nickname == data['email']).first()
@@ -426,7 +426,7 @@ def register():
             login_user(user)
             surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
             return render_template('profile.html', first_time=True, data=surse, user=user)
-        return render_template('register.html')
+        return render_template('notlogged/register.html')
 
 
 @app.route("/logout")

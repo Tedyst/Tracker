@@ -4,7 +4,7 @@
 
 {% block body %}
     {% with page='register' %}
-        {% include 'navbar_login.html' %}
+        {% include 'notlogged/navbar.html' %}
     {% endwith %}
     <div class="wrapper wrapper-full-page">
         <div class="full-page login-page" filter-color="black" data-image="{{ url_for('static', filename='img/login.jpg') }}">
