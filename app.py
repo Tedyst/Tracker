@@ -186,7 +186,7 @@ def settings():
     return render_template('settings.html', updated=True, data=site_names)
 
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/prob', methods=['GET', 'POST'])
 def prob():
     if current_user.is_authenticated:
         return redirect(url_for('prob_user', nickname=current_user.nickname))
