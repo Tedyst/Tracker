@@ -11,13 +11,23 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html', SITES=SITES_ALL, user=current_user)
+        return render_template('index.html')
     else:
         return render_template('login.html')
 
 
-@app.route('/index/<nickname>')
-def index_username(nickname):
+@app.route('/profile')
+def profile():
+    if current_user.is_authenticated:
+        return render_template('profile.html',
+                               SITES=SITES_ALL,
+                               user=current_user)
+    else:
+        return render_template('login.html')
+
+
+@app.route('/profile/<nickname>')
+def profile_username(nickname):
     user = dbutils.getUser(nickname)
     if user is None:
         return app.response_class(
@@ -27,7 +37,7 @@ def index_username(nickname):
 
         return render_template('login.html')
     else:
-        return render_template('index.html', SITES=SITES_ALL, user=user)
+        return render_template('profile.html', SITES=SITES_ALL, user=user)
 
 
 @app.route('/api/users')
@@ -415,7 +425,7 @@ def register():
             user = dbutils.createUser(data['name'], data['password'], data['email'])
             login_user(user)
             surse = json.dumps([i.__json__() for i in dbutils.getSurse(user, "all")])
-            return render_template('index.html', first_time=True, data=surse, user=user)
+            return render_template('profile.html', first_time=True, data=surse, user=user)
         return render_template('register.html')
 
 
