@@ -1,17 +1,7 @@
 {% set title = "Pagina Principala" %}
 {% set page="index" %}
 {% extends "base.html" %}
-{% block title %}
-    {% if current_user.is_authenticated %}
-        {% if current_user.fullname %}
-            {{ current_user.fullname }}
-        {% else %}
-            {{ current_user.nickname }}
-        {% endif %}
-    {% else %}
-        Index
-    {% endif %}
-{% endblock %}
+{% block title %}Index{% endblock %}
 
 {% block content %}
     <div class="container-fluid">

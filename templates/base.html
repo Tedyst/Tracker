@@ -17,13 +17,9 @@
     <body>
         {% block body %}
         <div class="wrapper">
-            {% with page='index' %}
-                {% include 'sidebar.html' %}
-            {% endwith %}
+            {% include 'sidebar.html' %}
             <div class="main-panel">
-                {% with title="Pagina Principala" %}
-                    {% include 'navbar.html' %}
-                {% endwith %}
+                {% include 'navbar.html' %}
                 <div class="content">
                     {% block content %}{% endblock %}
                 </div>
