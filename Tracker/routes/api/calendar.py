@@ -6,7 +6,7 @@ import datetime
 
 
 @api_blueprint.route('/api/calendar/<nickname>')
-def api_users_calendar(nickname):
+def users_calendar(nickname):
     user = User.query.filter(User.nickname == nickname).first()
     # In cazul in care userul cerut nu exista
     if user is None:

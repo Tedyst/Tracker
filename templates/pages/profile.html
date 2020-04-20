@@ -211,7 +211,7 @@
     var load_since = now.getTime()/1000 - 86400*4*31
 
     // Load only the latest 4 months
-    $.getJSON('{{ url_for("api_users", nickname=user.nickname, site="all") }}?load_since=' + load_since, function(data) {
+    $.getJSON('{{ url_for("api.users", nickname=user.nickname, site="all") }}?load_since=' + load_since, function(data) {
         for( i in data["result"] ) {
             data_trim = data["result"][i]["data"] - data["result"][i]["data"] % 86400;
             if(!cal1data.hasOwnProperty(data_trim))
@@ -258,7 +258,7 @@
 var date = {
     series: []
 };
-$.getJSON('{{url_for("api_grafic1", nickname = user.nickname)}}', function(data){
+$.getJSON('{{url_for("api.grafic1", nickname = user.nickname)}}', function(data){
     var len = data.length;
     var nrOfLabels = 0;
     var maxLabels=25;

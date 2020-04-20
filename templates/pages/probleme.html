@@ -65,7 +65,7 @@
 
 {% block scripts %}
 <script defer type="text/javascript">
-    $.getJSON('{{ url_for("api_users", nickname=user.nickname, site="all") }}', function(data) {
+    $.getJSON('{{ url_for("api.users", nickname=user.nickname, site="all") }}', function(data) {
         let tr = document.getElementById("table-body");
         for (var j = 0; j < data["result"].length; j++) {
             var row = tr.insertRow(j);

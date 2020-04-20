@@ -27,14 +27,14 @@
         <ul class="nav">
             {% if page == 'index' %}
                 <li class="active">
-                    <a href="{{ url_for('index') }}">
+                    <a href="{{ url_for('pages.index') }}">
                         <i class="material-icons">dashboard</i>
                         <p>Pagina principala</p>
                     </a>
                 </li>
             {% else %}
                 <li>
-                    <a href="{{ url_for('index') }}">
+                    <a href="{{ url_for('pages.index') }}">
                     <i class="material-icons">dashboard</i>
                     <p>Pagina principala</p>
                     </a>
@@ -43,14 +43,14 @@
 
             {% if page == 'profile' %}
                 <li class="active">
-                    <a href="{{ url_for('profile') }}">
+                    <a href="{{ url_for('pages.profile') }}">
                         <i class="material-icons">dashboard</i>
                         <p>Profilul meu</p>
                     </a>
                 </li>
             {% else %}
                 <li>
-                    <a href="{{ url_for('profile') }}">
+                    <a href="{{ url_for('pages.profile') }}">
                     <i class="material-icons">dashboard</i>
                     <p>Profilul meu</p>
                     </a>
@@ -59,7 +59,7 @@
 
             {% if not current_user.is_authenticated %}
                 <li>
-                    <a href="{{ url_for('login') }}">
+                    <a href="{{ url_for('auth.login') }}">
                     <i class="material-icons">fingerprint</i>
                     <p>Login</p>
                     </a>
@@ -68,7 +68,7 @@
 
             {% if not current_user.is_authenticated %}
                 <li>
-                    <a href="{{ url_for('register') }}">
+                    <a href="{{ url_for('auth.register') }}">
                     <i class="material-icons">person_add</i>
                     <p>Register</p>
                     </a>
@@ -78,14 +78,14 @@
             {% if current_user.is_authenticated %}
                 {% if page == 'prob' %}
                     <li class="active">
-                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
+                        <a href="{{ url_for('pages.probleme_user', nickname=current_user.nickname) }}">
                             <i class="material-icons">dashboard</i>
                             <p>Problemele mele</p>
                         </a>
                     </li>
                 {% else %}
                     <li>
-                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
+                        <a href="{{ url_for('pages.probleme_user', nickname=current_user.nickname) }}">
                             <i class="material-icons">dashboard</i>
                             <p>Problemele mele</p>
                         </a>
@@ -130,7 +130,7 @@
                 {% else %}
                 <li>
                 {% endif %}
-                    <a href="{{ url_for('settings') }}">
+                    <a href="{{ url_for('pages.settings') }}">
                     <i class="material-icons">settings</i>
                     <p>Setari</p>
                     </a>
@@ -139,7 +139,7 @@
 
             {% if current_user.is_authenticated %}
                 <li>
-                    <a href="{{ url_for('logout') }}">
+                    <a href="{{ url_for('auth.logout') }}">
                     <i class="material-icons">fingerprint</i>
                     <p>Logout</p>
                     </a>

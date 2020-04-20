@@ -5,7 +5,7 @@ from Tracker.routes.api import api_blueprint
 
 
 @api_blueprint.route('/api/grafic1/<nickname>')
-def api_grafic1(nickname):
+def grafic1(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
     if user is None:

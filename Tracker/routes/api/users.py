@@ -5,7 +5,7 @@ from flask import render_template, request, Response
 
 
 @api_blueprint.route('/api/users')
-def api_getuserlist():
+def getuserlist():
     # Pentru a creea un raspuns folosind JSON
     users = User.query.all()
     response = []
@@ -21,7 +21,7 @@ def api_getuserlist():
 
 
 @api_blueprint.route('/api/users/<user>')
-def api_getuser(user):
+def getuser(user):
     # In cazul in care userul cerut nu exista
     if not dbutils.userExists(user):
         error = {
@@ -66,7 +66,7 @@ def api_getuser(user):
 
 
 @api_blueprint.route('/api/users/<nickname>/<site>')
-def api_users(nickname, site):
+def users(nickname, site):
     # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
     debug = False
     if site == "debug" and app.debug is True:

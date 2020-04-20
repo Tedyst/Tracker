@@ -30,5 +30,5 @@ def login():
                                        failedlogin=True)
         if user.check_password(data['password']):
             login_user(user, remember=remember)
-            return redirect(url_for('index'))
+            return redirect(url_for('pages.index'))
         return render_template('notlogged/login.html', failedlogin=True)

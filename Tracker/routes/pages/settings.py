@@ -16,7 +16,7 @@ def usersettings():
     else:
         app.logger.info("Parola veche gresita pentru %s",
                         current_user.nickname)
-    return redirect(url_for('settings'))
+    return redirect(url_for('pages.settings'))
 
 
 @pages_blueprint.route('/settings', methods=['GET', 'POST'])

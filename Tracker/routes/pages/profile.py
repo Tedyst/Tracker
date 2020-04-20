@@ -11,7 +11,7 @@ def profile():
                                SITES=SITES_ALL,
                                user=current_user)
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('auth.login'))
 
 
 @pages_blueprint.route('/profile/<nickname>')

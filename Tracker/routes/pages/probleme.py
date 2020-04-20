@@ -5,14 +5,14 @@ from flask_login import current_user
 
 
 @pages_blueprint.route('/prob', methods=['GET', 'POST'])
-def prob():
+def probleme():
     if current_user.is_authenticated:
-        return redirect(url_for('prob_user', nickname=current_user.nickname))
-    return redirect(url_for('index'))
+        return redirect(url_for('pages.probleme_user', nickname=current_user.nickname))
+    return redirect(url_for('pages.index'))
 
 
 @pages_blueprint.route('/prob/<nickname>')
-def prob_user(nickname):
+def probleme_user(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
     # In cazul in care userul cerut nu exista
