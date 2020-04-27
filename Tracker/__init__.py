@@ -63,6 +63,7 @@ class User(db.Model):
     password = db.Column(db.String(200))
     email = db.Column(db.String(50))
     lock = threading.Lock()
+    admin = db.Column(db.Boolean())
 
     for i in SITES:
         vars()[i] = db.Column(db.String)
@@ -165,7 +166,7 @@ class Problema(db.Model):
 class AdminView(ModelView):
     def is_accessible(self):
         if current_user.is_authenticated:
-            if current_user.nickname == "Tedyst" or current_user.nickname == "RedPipper":
+            if current_user.admin == True:
                 return True
         return False
 
