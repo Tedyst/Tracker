@@ -11,7 +11,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html', SITES=SITES_ALL, user=current_user)
+        return render_template('index.html', SITES=SITES_ALL, user=current_user, first_time=True)
     else:
         return render_template('login.html')
 
@@ -176,7 +176,7 @@ def settings():
     return render_template('settings.html', updated=True, data=site_names)
 
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/prob', methods=['GET', 'POST'])
 def prob():
     if current_user.is_authenticated:
         return redirect(url_for('prob_user', nickname=current_user.nickname))
