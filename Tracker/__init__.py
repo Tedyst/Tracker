@@ -166,7 +166,7 @@ class Problema(db.Model):
 class AdminView(ModelView):
     def is_accessible(self):
         if current_user.is_authenticated:
-            if current_user.admin == True:
+            if current_user.admin is True:
                 return True
         return False
 
