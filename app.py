@@ -3,7 +3,7 @@ import json
 from flask import render_template, Response, request, redirect, url_for
 from datetime import datetime
 
-from Tracker import app, db, User, SITES, SITES_ALL
+from Tracker import app, db, User, SITES, SITES_ALL, git_hash
 import Tracker.dbutils as dbutils
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -438,6 +438,12 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.after_request
+def git_commit(response):
+    response.headers["COMMIT"] = git_hash
+    return response
 
 
 if __name__ == "__main__":

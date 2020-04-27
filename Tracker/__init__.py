@@ -10,9 +10,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 import os
 import ptvsd
+import subprocess
+
 
 SITES = ['pbinfo', 'infoarena', 'codeforces']
 SITES_ALL = ['pbinfo', 'infoarena', 'codeforces', 'all']
+git_hash = os.getenv("HASH") or subprocess.check_output(
+    ['git', 'rev-parse', '--short', 'HEAD']).strip()
 
 
 app = Flask(__name__,
