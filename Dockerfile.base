@@ -8,7 +8,7 @@ RUN apt update \
     ca-certificates \
     python3-pip \
     python3.7-dev \
-    python3-lxml libxml2-dev libxslt-dev
+    python3-lxml libxml2-dev libxslt-dev git
 
 # Added piwheels to make the builds faster
 ARG TARGETPLATFORM
