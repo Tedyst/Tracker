@@ -13,6 +13,7 @@ import os
 import ptvsd
 import subprocess
 from flask_admin.contrib.sqla import ModelView
+from flask_migrate import Migrate
 
 
 SITES = ['pbinfo', 'infoarena', 'codeforces']
@@ -50,6 +51,7 @@ else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 
