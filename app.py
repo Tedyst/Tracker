@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 import json
 from flask import render_template, Response, request, redirect, url_for
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from Tracker import app, db, User, SITES, SITES_ALL, git_hash, Problema
 import Tracker.dbutils as dbutils
 from flask_login import login_user, login_required, logout_user, current_user
+from Tracker.stats.last_days import last_days
 
 
 @app.route('/')
@@ -334,8 +335,12 @@ def api_dashboard():
         "total": {
             "surse": Problema.query.count(),
             "useri": User.query.count()
-        }
+        },
+        "surse": {}
     }
+    time = datetime.now() - timedelta(days=121)
+    surse = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
+    result["surse"] = last_days(surse)
 
     return app.response_class(
         response=json.dumps(result),
