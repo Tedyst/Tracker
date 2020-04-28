@@ -356,6 +356,45 @@ def api_users_calendar(nickname):
     )
 
 
+@app.route('/api/stats/all/<nickname>')
+def api_stats_all_username(nickname):
+    user = User.query.filter(User.nickname == nickname).first()
+    # In cazul in care userul cerut nu exista
+    if user is None:
+        error = {
+            "message": None
+        }
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Pentru a creea un raspuns folosind JSON
+    # @updating = daca va fi actualizat in viitorul apropiat
+    # @result = problemele userului de pe site-ul cerut
+
+    time = datetime.now() - timedelta(days=121)
+    surse = dbutils.getSurseSince(user, "all", datetime.timestamp(time))
+    result = {}
+    for name, stat in stats.ALL_STATS.items():
+        result[name] = stat(surse)
+
+    if dbutils.needsUpdate(user, "all"):
+        dbutils.updateThreaded(user)
+        return Response(json.dumps(result),
+                        status=200,
+                        mimetype='application/json')
+
+    # Pentru a specifica browserului ca este un raspuns JSON
+    return app.response_class(
+        response=json.dumps(result),
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
