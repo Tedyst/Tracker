@@ -270,12 +270,17 @@
 var date = {
     series: []
 };
-$.getJSON('{{url_for("api_grafic1", nickname = user.nickname)}}', function(data){
+var origstats = {};
+$.getJSON('{{url_for("api_stats_all_username", nickname = user.nickname)}}', function(data){
+    origstats = data;
+    grafic1(data["grafic1"]);
+});
+var grafic1 = function(data){
     var len = data.length;
     var nrOfLabels = 0;
     var maxLabels=25;
     var line = []
-    while(nrOfLabels <= maxLabels)
+    while(nrOfLabels <= maxLabels && len != 0)
     {
         if(data[len-1].solved == true)
         {
@@ -308,8 +313,6 @@ $.getJSON('{{url_for("api_grafic1", nickname = user.nickname)}}', function(data)
         right: 40
     }
     });
-})
-console.log(date);
-
+}
 </script>
 {% endblock %}
