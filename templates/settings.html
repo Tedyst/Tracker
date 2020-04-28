@@ -97,6 +97,33 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="card">
+                                <div class="card-header card-header-icon" data-background-color="purple">
+                                    <i class="material-icons">settings</i>
+                                </div>
+                                <div class="card-content">
+                                    <h3 class="card-title">Username afisat</h3>
+                                    <div class="row">
+                                        <form method="POST" action="{{ url_for('settings_fullname') }}">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="material-icons">lock_outline</i>
+                                                </span>
+                                                <div class="form-group label-floating">
+                                                    <label class="control-label">Noul Display Name</label>
+                                                    <input type="text" class="form-control" id="fullname" name="fullname" value="{{ current_user.fullname }}">
+                                                </div>
+                                            </div>
+                                            <div class="footer text-center">
+                                                <button type="submit" class="btn btn-fill btn-rose">Aplica schimbarile</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                         <div class="col-md-8">
                             <div class="card">
@@ -142,6 +169,11 @@
                                 </div>
                             </div>
                         </div>
+
+
+                            
+
+                        
                     </div>
                 </div>
             </div>
