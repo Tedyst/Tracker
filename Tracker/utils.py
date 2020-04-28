@@ -1,4 +1,5 @@
 import importlib
+from datetime import datetime
 
 
 def validUsername(username, site):
@@ -6,3 +7,8 @@ def validUsername(username, site):
     if mod.testUser(username):
         return True
     return False
+
+
+def roundTime(time):
+    return int(datetime.fromtimestamp(time).replace(
+        hour=0, minute=0, second=0).timestamp())
