@@ -3,7 +3,7 @@ import json
 from flask import render_template, Response, request, redirect, url_for
 from datetime import datetime
 
-from Tracker import app, db, User, SITES, SITES_ALL, git_hash
+from Tracker import app, db, User, SITES, SITES_ALL, git_hash, Problema
 import Tracker.dbutils as dbutils
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -320,6 +320,22 @@ def api_grafic1(nickname):
         return Response(json.dumps(result),
                         status=200,
                         mimetype='application/json')
+
+    return app.response_class(
+        response=json.dumps(result),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/api/dashboard')
+def api_dashboard():
+    result = {
+        "total": {
+            "surse": Problema.query.count(),
+            "useri": User.query.count()
+        }
+    }
 
     return app.response_class(
         response=json.dumps(result),
