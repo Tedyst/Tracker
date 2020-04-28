@@ -28,6 +28,10 @@ def getSurse(user: User, site) -> Iterable[Problema]:
 def getSurseSince(user: User, site, since) -> Iterable[Problema]:
     if site == "all":
         result = []
+        if user is None:
+            return Problema.query.filter(Problema.data >= since)\
+                .options(raiseload('*')).all()
+
         for i in SITES:
             if user[i] is not None:
                 result += Problema.query.filter(Problema.username == user[i])\
@@ -36,11 +40,15 @@ def getSurseSince(user: User, site, since) -> Iterable[Problema]:
                                         .options(raiseload('*')).all()
         return result
     else:
-        q = Problema.query.filter(Problema.username == user[site])\
-                          .options(raiseload('*'))\
-                          .filter(Problema.data >= since)\
-                          .filter(Problema.sursa == site).all()
-    return q
+        if user is None:
+            return Problema.query.filter(Problema.data >= since)\
+                .filter(Problema.sursa == site)\
+                .options(raiseload('*')).all()
+
+        return Problema.query.filter(Problema.username == user[site])\
+            .options(raiseload('*'))\
+            .filter(Problema.data >= since)\
+            .filter(Problema.sursa == site).all()
 
 
 def addSurse(probleme):
@@ -55,7 +63,8 @@ def addSurse(probleme):
 
 def updateSurse(sursa, username):
     mod = importlib.import_module("Tracker.sites." + sursa)
-    app.logger.debug("Updating surse for user %s from site %s", username, sursa)
+    app.logger.debug(
+        "Updating surse for user %s from site %s", username, sursa)
     if mod.testUser(username):
         probleme = mod.getUser(username)
         for i in probleme:
