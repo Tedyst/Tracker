@@ -15,11 +15,11 @@
                             <form method="post" action="{{ url_for('login') }}">
                                 <div class="card card-login card-hidden">
                                     {% if failedlogin %}
-                                        <div class="card-header text-center" data-background-color="rose">
+                                        <div class="card-header text-center" data-background-color="green">
                                             <h4 class="card-title">User sau parola incorecte</h4>
                                         </div>
                                     {% else %}
-                                        <div class="card-header text-center" data-background-color="rose">
+                                        <div class="card-header text-center" data-background-color="green">
                                             <h4 class="card-title">Login</h4>
                                         </div>
                                     {% endif %}
@@ -51,7 +51,7 @@
                                         </div>
                                     </div>
                                     <div class="footer text-center">
-                                        <button type="submit" class="btn btn-rose btn-simple btn-wd btn-lg">Let's go</button>
+                                        <button type="submit" class="btn btn btn-simple btn-wd btn-lg">Let's go</button>
                                     </div>
                                 </div>
                             </form>
