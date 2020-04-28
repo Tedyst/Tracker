@@ -1,9 +1,7 @@
-from Tracker import User, Problema, dbutils, db, SITES
-from datetime import datetime, timedelta
 from Tracker.utils import roundTime
 
 
-def last_days(probleme: [Problema]):
+def last_days(probleme):
     result = {
         "resolved": 0,
         "failed": 0,

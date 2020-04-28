@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from Tracker import app, db, User, SITES, SITES_ALL, git_hash, Problema
 import Tracker.dbutils as dbutils
 from flask_login import login_user, login_required, logout_user, current_user
-from Tracker.stats.last_days import last_days
+import Tracker.stats as stats
 
 
 @app.route('/')
@@ -267,7 +267,7 @@ def api_users(nickname, site):
     )
 
 
-@app.route('/api/grafic1/<nickname>')
+@app.route('/api/stats/grafic1/<nickname>')
 def api_grafic1(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
@@ -282,38 +282,9 @@ def api_grafic1(nickname):
             mimetype='application/json'
         )
 
-    data = dbutils.getSurse(user, "all")
-    result = []
-    for subm in data:
-        prob = None
-        for i, sub in enumerate(result):
-            if sub["name"] == subm.problema:
-                if result[i]["solved"] is False:
-                    result[i]["attempts"] += 1
-                    if subm.scor == "100" or subm.scor == "Accepted":
-                        result[i]["solved"] = True
-                        result[i]["data"] = subm.data
-                    else:
-                        result[i]["solved"] = False
-                elif result[i]["data"] >= subm.data and not (subm.scor == "100" or subm.scor == "Accepted"):
-                    result[i]["attempts"] += 1
-
-                prob = sub
-                break
-
-        if prob is None:
-            temp = {}
-            temp["name"] = subm.problema
-            temp["data"] = subm.data
-            temp["attempts"] = 1
-            if subm.scor == "100" or subm.scor == "Accepted":
-                temp["solved"] = True
-            else:
-                temp["solved"] = False
-            result.append(temp)
-
-    result = sorted(result, key=lambda k: k['data'])
-    db.session.commit()
+    time = datetime.now() - timedelta(days=121)
+    data = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
+    result = stats.grafic1(data)
 
     if dbutils.needsUpdate(user, "all"):
         dbutils.updateThreaded(user)
@@ -329,7 +300,7 @@ def api_grafic1(nickname):
     )
 
 
-@app.route('/api/dashboard')
+@app.route('/api/stats/dashboard')
 def api_dashboard():
     result = {
         "total": {
@@ -340,7 +311,7 @@ def api_dashboard():
     }
     time = datetime.now() - timedelta(days=121)
     surse = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
-    result["surse"] = last_days(surse)
+    result["surse"] = stats.last_days(surse)
 
     return app.response_class(
         response=json.dumps(result),
@@ -349,7 +320,7 @@ def api_dashboard():
     )
 
 
-@app.route('/api/calendar/<nickname>')
+@app.route('/api/stats/calendar/<nickname>')
 def api_users_calendar(nickname):
     user = User.query.filter(User.nickname == nickname).first()
     # In cazul in care userul cerut nu exista
@@ -368,23 +339,12 @@ def api_users_calendar(nickname):
     # @updating = daca va fi actualizat in viitorul apropiat
     # @result = problemele userului de pe site-ul cerut
 
-    data = dbutils.getSurse(user, "all")
-    mem = []
-    result = {}
-    for i in data:
-        timp = int(datetime.fromtimestamp(i.data).replace(
-            hour=0, minute=0, second=0).timestamp())
-        try:
-            if i.idprob not in mem:
-                result[timp] += 1
-                mem.append(i.idprob)
-        except Exception:
-            result[timp] = 1
-    db.session.commit()
+    time = datetime.now() - timedelta(days=121)
+    surse = dbutils.getSurseSince(user, "all", datetime.timestamp(time))
+    result = stats.calendar(surse)
 
     if dbutils.needsUpdate(user, "all"):
         dbutils.updateThreaded(user)
-
         return Response(json.dumps(result),
                         status=200,
                         mimetype='application/json')
