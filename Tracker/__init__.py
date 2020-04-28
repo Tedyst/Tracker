@@ -1,16 +1,20 @@
-from flask import Flask
+from flask_admin import Admin
+from flask import Flask, redirect, url_for
 import sys
 from flask_sqlalchemy import SQLAlchemy
 import threading
 import hashlib
 from sqlalchemy.orm.attributes import set_attribute, flag_modified
 from flask_debugtoolbar import DebugToolbarExtension
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 import logging
 import os
 import ptvsd
 import subprocess
+from flask_admin.contrib.sqla import ModelView
+from flask_migrate import Migrate
+import click
 
 
 SITES = ['pbinfo', 'infoarena', 'codeforces']
@@ -26,6 +30,8 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY") or "key"
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger.setLevel(logging.INFO)
+
+admin = Admin(app, name='Tracker', template_mode='bootstrap3')
 
 if os.getenv("APP_ENV") == "docker":
     app.logger.info("Enabled vscode debugger")
@@ -46,6 +52,7 @@ else:
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 
@@ -57,6 +64,7 @@ class User(db.Model):
     password = db.Column(db.String(200))
     email = db.Column(db.String(50))
     lock = threading.Lock()
+    admin = db.Column(db.Boolean())
 
     for i in SITES:
         vars()[i] = db.Column(db.String)
@@ -156,6 +164,45 @@ class Problema(db.Model):
         return data
 
 
+class AdminView(ModelView):
+    def is_accessible(self):
+        if current_user.is_authenticated:
+            if current_user.admin is True:
+                return True
+        return False
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('index'))
+
+
+admin.add_view(AdminView(User, db.session))
+admin.add_view(AdminView(Problema, db.session))
+
+
+@app.cli.command("setadmin")
+@click.argument("nickname")
+def set_admin(nickname):
+    user = User.query.filter(User.nickname == nickname).first()
+    if user is None:
+        print("User not found!")
+        return
+    user.admin = True
+    db.session.commit()
+    print("Set user as admin!")
+
+
+@app.cli.command("deluser")
+@click.argument("nickname")
+def del_user(nickname):
+    user = User.query.filter(User.nickname == nickname).first()
+    if user is None:
+        print("User not found!")
+        return
+    db.session.delete(user)
+    db.session.commit()
+    print("Deleted user!")
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == user_id).first()
@@ -165,4 +212,6 @@ def sortProbleme_date(self):
     return self.data
 
 
+app.cli.add_command(set_admin)
+app.cli.add_command(del_user)
 db.create_all()
