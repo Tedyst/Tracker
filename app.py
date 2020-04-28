@@ -302,16 +302,15 @@ def api_grafic1(nickname):
 
 @app.route('/api/stats/dashboard')
 def api_dashboard():
+    time = datetime.now() - timedelta(days=121)
+    surse = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
     result = {
         "total": {
             "surse": Problema.query.count(),
             "useri": User.query.count()
         },
-        "surse": {}
+        "surse": stats.last_days(surse)
     }
-    time = datetime.now() - timedelta(days=121)
-    surse = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
-    result["surse"] = stats.last_days(surse)
 
     return app.response_class(
         response=json.dumps(result),
