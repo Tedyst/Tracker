@@ -127,10 +127,16 @@ def prob_user(nickname):
                            user=user)
 
 
-@app.route('/usersettings', methods=['POST'])
+@app.route('/settings/password', methods=['POST'])
 @login_required
 def usersettings():
     data = request.form
+    if "oldpassword" not in data:
+        return redirect(url_for('settings'))
+    if "password" not in data:
+        return redirect(url_for('settings'))
+    if "email" not in data:
+        return redirect(url_for('settings'))
     if current_user.check_password(data['oldpassword']):
         app.logger.info("Schimat parola/email pentru %s",
                         current_user.nickname)
@@ -139,6 +145,21 @@ def usersettings():
     else:
         app.logger.info("Parola veche gresita pentru %s",
                         current_user.nickname)
+    return redirect(url_for('settings'))
+
+
+@app.route('/settings/fullname', methods=['POST'])
+@login_required
+def settings_fullname():
+    data = request.form
+    if "fullname" not in data:
+        return redirect(url_for('settings'))
+    user = dbutils.getUser(current_user.nickname)
+    user.fullname = data['fullname']
+    app.logger.info("Schimbat full name pentru %s in %s",
+                    current_user.nickname,
+                    user.fullname)
+    db.session.commit()
     return redirect(url_for('settings'))
 
 
