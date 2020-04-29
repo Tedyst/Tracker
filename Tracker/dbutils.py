@@ -166,8 +166,8 @@ def _threadedupd(usernames, lock):
             break
         # Nu am sters inca
         if elem.sursa not in deleted:
-            Problema.query.filter(Problema.username == usernames[site])\
-                          .filter(Problema.sursa == site).delete()
+            Problema.query.filter(Problema.username == usernames[elem.sursa])\
+                          .filter(Problema.sursa == elem.sursa).delete()
             deleted[elem.sursa] = True
 
         db.session.add(elem)
