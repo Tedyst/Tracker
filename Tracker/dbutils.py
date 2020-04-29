@@ -159,9 +159,6 @@ def _threadedupd(usernames, lock):
         site.join()
 
     deleted = {}
-    for site in usernames:
-        Problema.query.filter(Problema.username == usernames[site])\
-                      .filter(Problema.sursa == site).delete()
     while True:
         try:
             elem = updatequeue.get_nowait()
