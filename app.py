@@ -3,13 +3,14 @@ import json
 from flask import render_template, Response, request, redirect, url_for
 from datetime import datetime, timedelta
 
-from Tracker import app, db, User, SITES, SITES_ALL, git_hash, Problema
+from Tracker import app, db, User, SITES, SITES_ALL, git_hash, cache
 import Tracker.dbutils as dbutils
 from flask_login import login_user, login_required, logout_user, current_user
 import Tracker.stats as stats
 
 
 @app.route('/')
+@cache.cached(timeout=50)
 def index():
     if current_user.is_authenticated:
         for sites in SITES:
@@ -26,6 +27,7 @@ def index():
 
 
 @app.route('/index/<nickname>')
+@cache.cached(timeout=50)
 def index_username(nickname):
     user = dbutils.getUser(nickname)
     if user is None:
@@ -40,6 +42,7 @@ def index_username(nickname):
 
 
 @app.route('/api/users')
+@cache.cached(timeout=50)
 def api_getuserlist():
     # Pentru a creea un raspuns folosind JSON
     users = User.query.all()
@@ -101,6 +104,7 @@ def api_getuser(user):
 
 
 @app.route('/prob/<nickname>')
+@cache.cached(timeout=600)
 def prob_user(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
@@ -216,6 +220,7 @@ def prob():
 
 
 @app.route('/api/users/<nickname>/<site>')
+@cache.cached(timeout=50)
 def api_users(nickname, site):
     # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
     debug = False
@@ -289,6 +294,7 @@ def api_users(nickname, site):
 
 
 @app.route('/api/stats/<stat>/<nickname>')
+@cache.cached(timeout=50)
 def api_stats_user(stat, nickname):
     user = User.query.filter(User.nickname == nickname).first()
     load_since = request.args.get('load_since')
@@ -340,6 +346,7 @@ def api_stats_user(stat, nickname):
 
 
 @app.route('/api/stats/<stat>')
+@cache.cached(timeout=600)
 def api_stats_general(stat):
     if stat not in stats.ALL_STATS and stat != "all":
         error = {
