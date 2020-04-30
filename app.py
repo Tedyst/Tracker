@@ -289,7 +289,7 @@ def api_users(nickname, site):
 
 
 @app.route('/api/stats/<stat>/<nickname>')
-def api_stats(stat, nickname):
+def api_stats_user(stat, nickname):
     user = User.query.filter(User.nickname == nickname).first()
     load_since = request.args.get('load_since')
 
@@ -331,6 +331,36 @@ def api_stats(stat, nickname):
         return Response(json.dumps(result),
                         status=200,
                         mimetype='application/json')
+
+    return app.response_class(
+        response=json.dumps(result),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/api/stats/<stat>')
+def api_stats_general(stat):
+    if stat not in stats.ALL_STATS and stat != "all":
+        error = {
+            "message": "This stat does not exist"
+        }
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Force lookup only last 4 months
+    time = datetime.now() - timedelta(days=121)
+    data = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
+
+    result = {}
+    if stat == "all":
+        for name, func in stats.ALL_STATS.items():
+            result[name] = func(data)
+    else:
+        result = stats.ALL_STATS[stat](data)
 
     return app.response_class(
         response=json.dumps(result),
