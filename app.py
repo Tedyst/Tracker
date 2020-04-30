@@ -10,17 +10,20 @@ import Tracker.stats as stats
 
 
 @app.route('/')
-def index():
+def index(**kwargs):
+    kwargs.update(request.args.to_dict())
     if current_user.is_authenticated:
         for sites in SITES:
-            if current_user[sites] != None:
+            if current_user[sites] is not None:
                 return render_template('index.html',
                                        SITES=SITES_ALL,
-                                       user=current_user)
+                                       user=current_user,
+                                       **kwargs)
         return render_template('index.html',
                                SITES=SITES_ALL,
                                user=current_user,
-                               first_time=True)
+                               first_time=True,
+                               **kwargs)
     else:
         return render_template('login.html')
 
@@ -33,10 +36,17 @@ def index_username(nickname):
             response=render_template('404.html'),
             status=404
         )
-
-        return render_template('login.html')
     else:
         return render_template('index.html', SITES=SITES_ALL, user=user)
+
+
+@app.route('/search')
+def search(**kwargs):
+    nickname = request.args.get("search")
+    user = dbutils.getUser(nickname)
+    if user is None or nickname is None:
+        return redirect(url_for('index', error="The User that you searched was not found"))
+    return redirect(url_for('index_username', nickname=nickname))
 
 
 @app.route('/api/users')

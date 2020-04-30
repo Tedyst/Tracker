@@ -25,6 +25,18 @@
         {% endwith %}
         <div class="content">
             <div class="container-fluid">
+            {% if error %}
+                <div class="alert alert-danger alert-with-icon" data-notify="container">
+                    <i class="material-icons" data-notify="icon">notifications</i>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                        <i class="material-icons">close</i>
+                    </button>
+                    <span class="now-ui-icons ui-1_bell-53" data-notify="icon"></span>
+                    <span data-notify="message">
+                        {{ error }}
+                    </span>
+                </div>
+            {% endif %}
             {% if first_time %}
                 <div class="alert alert-info alert-with-icon" data-notify="container" href onclick="window.location='{{ url_for('settings') }}';">
                     <i class="material-icons" data-notify="icon">notifications</i>

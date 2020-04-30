@@ -16,9 +16,9 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">{{ title }}</a>
         </div>
         <div class="collapse navbar-collapse">
-            <form class="navbar-form navbar-right" role="search">
+            <form class="navbar-form navbar-right" role="search" action="{{ url_for('search') }}">
                 <div class="form-group form-search is-empty">
-                    <input type="text" class="form-control" placeholder="Vezi statisticile utilizatorului">
+                    <input type="text" class="form-control" id="search" placeholder="Vezi statisticile utilizatorului" name="search">
                     <span class="material-input"></span>
                 </div>
                 <button type="submit" class="btn btn-white btn-round btn-just-icon">
