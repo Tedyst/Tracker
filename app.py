@@ -288,9 +288,19 @@ def api_users(nickname, site):
     )
 
 
-@app.route('/api/stats/grafic1/<nickname>')
-def api_grafic1(nickname):
+@app.route('/api/stats/<stat>/<nickname>')
+def api_grafic1(stat, nickname):
     user = User.query.filter(User.nickname == nickname).first()
+
+    if stat not in stats.ALL_STATS:
+        error = {
+            "message": "This stat does not exist"
+        }
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
 
     if user is None:
         error = {
@@ -305,7 +315,7 @@ def api_grafic1(nickname):
 
     time = datetime.now() - timedelta(days=121)
     data = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
-    result = stats.grafic1(data)
+    result = stats.ALL_STATS[stat](data)
 
     if dbutils.needsUpdate(user, "all"):
         dbutils.updateThreaded(user)
