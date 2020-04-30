@@ -10,7 +10,6 @@ import Tracker.stats as stats
 
 
 @app.route('/')
-@cache.cached(timeout=50)
 def index():
     if current_user.is_authenticated:
         for sites in SITES:
