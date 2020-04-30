@@ -271,7 +271,7 @@ var date = {
     series: []
 };
 var origstats = {};
-$.getJSON('{{url_for("api_stats_all_username", nickname = user.nickname)}}', function(data){
+$.getJSON('{{url_for("api_stats", stat="all", nickname = user.nickname)}}', function(data){
     origstats = data;
     grafic1(data["grafic1"]);
 });
