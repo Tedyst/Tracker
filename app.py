@@ -104,7 +104,7 @@ def api_getuser(user):
 
 
 @app.route('/prob/<nickname>')
-@cache.cached(timeout=600)
+@cache.cached(timeout=50)
 def prob_user(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
@@ -220,7 +220,7 @@ def prob():
 
 
 @app.route('/api/users/<nickname>/<site>')
-@cache.cached(timeout=50)
+@cache.cached(timeout=600)
 def api_users(nickname, site):
     # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
     debug = False
