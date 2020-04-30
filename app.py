@@ -215,6 +215,49 @@ def prob():
     return redirect(url_for('index'))
 
 
+@app.route('/api/users/<nickname>/<site>/reload')
+def api_users_forcereload(nickname, site):
+    load_since = request.args.get('load_since')
+
+    user = User.query.filter(User.nickname == nickname).first()
+    # In cazul in care userul cerut nu exista
+    if user is None:
+        error = {
+            "message": None
+        }
+        error["message"] = "This user does not exist"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # In cazul in care site-ul cerut nu exista
+    if site not in SITES_ALL:
+        error = {
+            "message": None
+        }
+        error["message"] = "Site dosen't exist or is not tracked"
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Pentru a creea un raspuns folosind JSON
+    # @updating = daca va fi actualizat in viitorul apropiat
+    # @result = problemele userului de pe site-ul cerut
+    response = {
+        "updating": True
+    }
+    dbutils.updateThreaded(user)
+    return app.response_class(
+        response=json.dumps(response),
+        status=200,
+        mimetype='application/json'
+    )
+
+
 @app.route('/api/users/<nickname>/<site>')
 def api_users(nickname, site):
     # Adaugam debug pentru ca sa vedem cat de mult dureaza cu toolbar
