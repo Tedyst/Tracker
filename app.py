@@ -291,6 +291,7 @@ def api_users(nickname, site):
 @app.route('/api/stats/<stat>/<nickname>')
 def api_stats(stat, nickname):
     user = User.query.filter(User.nickname == nickname).first()
+    load_since = request.args.get('load_since')
 
     if stat not in stats.ALL_STATS and stat != "all":
         error = {
@@ -313,8 +314,10 @@ def api_stats(stat, nickname):
             mimetype='application/json'
         )
 
-    time = datetime.now() - timedelta(days=121)
-    data = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
+    if load_since is None:
+        data = dbutils.getSurse(user, "all")
+    else:
+        data = dbutils.getSurseSince(user, "all", load_since)
     result = {}
     if stat == "all":
         for name, func in stats.ALL_STATS.items():
