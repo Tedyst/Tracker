@@ -15,6 +15,7 @@ import subprocess
 from flask_admin.contrib.sqla import ModelView
 from flask_migrate import Migrate
 import click
+from flask_caching import Cache
 
 
 SITES = ['pbinfo', 'infoarena', 'codeforces']
@@ -32,6 +33,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.logger.setLevel(logging.INFO)
 
 admin = Admin(app, name='Tracker', template_mode='bootstrap3')
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 if os.getenv("APP_ENV") == "docker":
     app.logger.info("Enabled vscode debugger")
