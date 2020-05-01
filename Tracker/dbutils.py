@@ -15,13 +15,15 @@ def getSurse(user: User, site) -> Iterable[Problema]:
         for i in SITES:
             if user[i] is not None:
                 result += Problema.query.filter(Problema.username == user[i])\
-                                        .filter(Problema.sursa == i)\
-                                        .options(raiseload('*')).all()
+                    .filter(Problema.sursa == i)\
+                    .options(raiseload('*'))\
+                    .order_by(Problema.data).all()
         return result
     else:
         q = Problema.query.filter(Problema.username == user[site])\
-                          .options(raiseload('*'))\
-                          .filter(Problema.sursa == site).all()
+            .options(raiseload('*'))\
+            .filter(Problema.sursa == site)\
+            .order_by(Problema.data).all()
     return q
 
 
@@ -30,25 +32,29 @@ def getSurseSince(user: User, site, since) -> Iterable[Problema]:
         result = []
         if user is None:
             return Problema.query.filter(Problema.data >= since)\
-                .options(raiseload('*')).all()
+                .options(raiseload('*'))\
+                .order_by(Problema.data).all()
 
         for i in SITES:
             if user[i] is not None:
                 result += Problema.query.filter(Problema.username == user[i])\
                                         .filter(Problema.sursa == i)\
                                         .filter(Problema.data >= since)\
-                                        .options(raiseload('*')).all()
+                                        .options(raiseload('*'))\
+                                        .order_by(Problema.data).all()
         return result
     else:
         if user is None:
             return Problema.query.filter(Problema.data >= since)\
                 .filter(Problema.sursa == site)\
-                .options(raiseload('*')).all()
+                .options(raiseload('*'))\
+                .order_by(Problema.data).all()
 
         return Problema.query.filter(Problema.username == user[site])\
             .options(raiseload('*'))\
             .filter(Problema.data >= since)\
-            .filter(Problema.sursa == site).all()
+            .filter(Problema.sursa == site)\
+            .order_by(Problema.data).all()
 
 
 def addSurse(probleme):

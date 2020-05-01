@@ -288,9 +288,20 @@ def api_users(nickname, site):
     )
 
 
-@app.route('/api/stats/grafic1/<nickname>')
-def api_grafic1(nickname):
+@app.route('/api/stats/<stat>/<nickname>')
+def api_stats_user(stat, nickname):
     user = User.query.filter(User.nickname == nickname).first()
+    load_since = request.args.get('load_since')
+
+    if stat not in stats.ALL_STATS and stat != "all":
+        error = {
+            "message": "This stat does not exist"
+        }
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
 
     if user is None:
         error = {
@@ -303,112 +314,54 @@ def api_grafic1(nickname):
             mimetype='application/json'
         )
 
+    if load_since is None:
+        data = dbutils.getSurse(user, "all")
+    else:
+        data = dbutils.getSurseSince(user, "all", load_since)
+    result = {}
+    if stat == "all":
+        for name, func in stats.ALL_STATS.items():
+            result[name] = func(data)
+    else:
+        result = stats.ALL_STATS[stat](data)
+
+    if dbutils.needsUpdate(user, "all"):
+        dbutils.updateThreaded(user)
+
+        return Response(json.dumps(result),
+                        status=200,
+                        mimetype='application/json')
+
+    return app.response_class(
+        response=json.dumps(result),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route('/api/stats/<stat>')
+def api_stats_general(stat):
+    if stat not in stats.ALL_STATS and stat != "all":
+        error = {
+            "message": "This stat does not exist"
+        }
+        return app.response_class(
+            response=json.dumps(error),
+            status=404,
+            mimetype='application/json'
+        )
+
+    # Force lookup only last 4 months
     time = datetime.now() - timedelta(days=121)
     data = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
-    result = stats.grafic1(data)
 
-    if dbutils.needsUpdate(user, "all"):
-        dbutils.updateThreaded(user)
-
-        return Response(json.dumps(result),
-                        status=200,
-                        mimetype='application/json')
-
-    return app.response_class(
-        response=json.dumps(result),
-        status=200,
-        mimetype='application/json'
-    )
-
-
-@app.route('/api/stats/dashboard')
-def api_dashboard():
-    time = datetime.now() - timedelta(days=121)
-    surse = dbutils.getSurseSince(None, "all", datetime.timestamp(time))
-    result = {
-        "total": {
-            "surse": Problema.query.count(),
-            "useri": User.query.count()
-        },
-        "surse": stats.last_days(surse)
-    }
-
-    return app.response_class(
-        response=json.dumps(result),
-        status=200,
-        mimetype='application/json'
-    )
-
-
-@app.route('/api/stats/calendar/<nickname>')
-def api_users_calendar(nickname):
-    user = User.query.filter(User.nickname == nickname).first()
-    # In cazul in care userul cerut nu exista
-    if user is None:
-        error = {
-            "message": None
-        }
-        error["message"] = "This user does not exist"
-        return app.response_class(
-            response=json.dumps(error),
-            status=404,
-            mimetype='application/json'
-        )
-
-    # Pentru a creea un raspuns folosind JSON
-    # @updating = daca va fi actualizat in viitorul apropiat
-    # @result = problemele userului de pe site-ul cerut
-
-    time = datetime.now() - timedelta(days=121)
-    surse = dbutils.getSurseSince(user, "all", datetime.timestamp(time))
-    result = stats.calendar(surse)
-
-    if dbutils.needsUpdate(user, "all"):
-        dbutils.updateThreaded(user)
-        return Response(json.dumps(result),
-                        status=200,
-                        mimetype='application/json')
-
-    # Pentru a specifica browserului ca este un raspuns JSON
-    return app.response_class(
-        response=json.dumps(result),
-        status=200,
-        mimetype='application/json'
-    )
-
-
-@app.route('/api/stats/all/<nickname>')
-def api_stats_all_username(nickname):
-    user = User.query.filter(User.nickname == nickname).first()
-    # In cazul in care userul cerut nu exista
-    if user is None:
-        error = {
-            "message": None
-        }
-        error["message"] = "This user does not exist"
-        return app.response_class(
-            response=json.dumps(error),
-            status=404,
-            mimetype='application/json'
-        )
-
-    # Pentru a creea un raspuns folosind JSON
-    # @updating = daca va fi actualizat in viitorul apropiat
-    # @result = problemele userului de pe site-ul cerut
-
-    time = datetime.now() - timedelta(days=121)
-    surse = dbutils.getSurseSince(user, "all", datetime.timestamp(time))
     result = {}
-    for name, stat in stats.ALL_STATS.items():
-        result[name] = stat(surse)
+    if stat == "all":
+        for name, func in stats.ALL_STATS.items():
+            result[name] = func(data)
+    else:
+        result = stats.ALL_STATS[stat](data)
 
-    if dbutils.needsUpdate(user, "all"):
-        dbutils.updateThreaded(user)
-        return Response(json.dumps(result),
-                        status=200,
-                        mimetype='application/json')
-
-    # Pentru a specifica browserului ca este un raspuns JSON
     return app.response_class(
         response=json.dumps(result),
         status=200,
