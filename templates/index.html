@@ -232,7 +232,7 @@
     var month = up.getMonth()-3;
     var dwn = new Date(year,month);
     var now = new Date();
-    var load_since = now.getTime()/1000 - 86400*4*31
+    var load_since = now.getTime()/1000 - 86400*4*31;
 
     // Load only the latest 4 months
     $.getJSON('{{ url_for("api_users", nickname=user.nickname, site="all") }}?load_since=' + load_since, function(data) {
@@ -283,7 +283,7 @@ var date = {
     series: []
 };
 var origstats = {};
-$.getJSON('{{url_for("api_stats_all_username", nickname = user.nickname)}}', function(data){
+$.getJSON('{{url_for("api_stats_user", stat="all", nickname = user.nickname)}}?load_since=' + load_since, function(data){
     origstats = data;
     grafic1(data["grafic1"]);
 });
