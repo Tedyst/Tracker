@@ -25,32 +25,22 @@
         </div>
         
         <ul class="nav">
-            {% if page == 'index' %}
-                <li class="active">
-                    <a href="{{ url_for('index') }}">
-                        <i class="material-icons">dashboard</i>
-                        <p>Pagina principala</p>
-                    </a>
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ url_for('index') }}">
-                    <i class="material-icons">dashboard</i>
-                    <p>Pagina principala</p>
-                    </a>
-                </li>
-            {% endif %}
 
             {% if not current_user.is_authenticated %}
+                <li {%if page == 'index'%} class="active" {%endif%}>
+                            <a href="{{ url_for('index') }}">
+                                <i class="material-icons">dashboard</i>
+                                <p>Pagina principala</p>
+                            </a>
+                </li>
+
                 <li>
                     <a href="{{ url_for('login') }}">
                     <i class="material-icons">fingerprint</i>
                     <p>Login</p>
                     </a>
                 </li>
-            {% endif %}
 
-            {% if not current_user.is_authenticated %}
                 <li>
                     <a href="{{ url_for('register') }}">
                     <i class="material-icons">person_add</i>
@@ -60,68 +50,28 @@
             {% endif %}
 
             {% if current_user.is_authenticated %}
-                {% if page == 'prob' %}
-                    <li class="active">
-                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
-                            <i class="material-icons">dashboard</i>
-                            <p>Problemele mele</p>
-                        </a>
-                    </li>
-                {% else %}
-                    <li>
-                        <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
-                            <i class="material-icons">dashboard</i>
-                            <p>Problemele mele</p>
-                        </a>
-                    </li>
-                {% endif %}
-            {% endif %}
 
-            <!-- <li>
-                <a data-toggle="collapse" href="#pagesExamples">
-                    <i class="material-icons">image</i>
-                    <p>Pages
-                        <b class="caret"></b>
-                    </p>
-                </a>
-                <div class="collapse" id="pagesExamples">
-                    <ul class="nav">
-                        <li>
-                            <a href="../pages/pricing.html">Pricing</a>
-                        </li>
-                        <li>
-                            <a href="../pages/timeline.html">Timeline</a>
-                        </li>
-                        <li>
-                            <a href="../pages/login.html">Login Page</a>
-                        </li>
-                        <li>
-                            <a href="../pages/register.html">Register Page</a>
-                        </li>
-                        <li>
-                            <a href="../pages/lock.html">Lock Screen Page</a>
-                        </li>
-                        <li>
-                            <a href="../pages/user.html">User Profile</a>
-                        </li>
-                    </ul>
-                </div>
-            </li> -->
+                <li {%if page == 'index' and current_user.nickname == user%} class="active" {%endif%}>
+                            <a href="{{ url_for('index') }}">
+                                <i class="material-icons">dashboard</i>
+                                <p>Profilul meu</p>
+                            </a>    
+                </li>
 
-            {% if current_user.is_authenticated %}
-                {% if page == 'settings' %}
-                <li class="active">
-                {% else %}
-                <li>
-                {% endif %}
+                <li {% if page == 'prob' %}class="active"{%endif%}>
+                    <a href="{{ url_for('prob_user', nickname=current_user.nickname) }}">
+                        <i class="material-icons">dashboard</i>
+                        <p>Problemele mele</p>
+                    </a>
+                </li>
+
+                <li {% if page == 'settings' %}class="active"{%endif%}>
                     <a href="{{ url_for('settings') }}">
                     <i class="material-icons">settings</i>
                     <p>Setari</p>
                     </a>
                 </li>
-            {% endif %}
 
-            {% if current_user.is_authenticated %}
                 <li>
                     <a href="{{ url_for('logout') }}">
                     <i class="material-icons">fingerprint</i>

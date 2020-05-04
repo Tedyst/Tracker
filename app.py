@@ -22,22 +22,28 @@ def index():
                                user=current_user,
                                first_time=True)
     else:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
-@app.route('/index/<nickname>')
+@app.route('/profile/<nickname>')
 @cache.cached(timeout=50)
-def index_username(nickname):
-    user = dbutils.getUser(nickname)
-    if user is None:
-        return app.response_class(
-            response=render_template('404.html'),
-            status=404
-        )
+def profile_username(nickname):
+    if current_user.is_authenticated:
+        user = dbutils.getUser(nickname)
+        if user is None:
+            return app.response_class(
+                response=render_template('404.html'),
+                status=404
+            )
 
-        return render_template('login.html')
+            return redirect(url_for('index'))
+        else:
+            if current_user.nickname == user.nickname:
+                return redirect(url_for('index'))
+            else:
+                return render_template('index.html', SITES=SITES_ALL, user=user)
     else:
-        return render_template('index.html', SITES=SITES_ALL, user=user)
+        return redirect(url_for('login'))
 
 
 @app.route('/api/users')
@@ -101,6 +107,12 @@ def api_getuser(user):
         mimetype='application/json'
     )
 
+@app.route('/search', methods=['POST'])
+def search():
+    data = request.form.to_dict()
+    print(data)
+    return redirect(url_for('profile_username', nickname=data['to_search']))
+    
 
 @app.route('/prob/<nickname>')
 @cache.cached(timeout=50)
