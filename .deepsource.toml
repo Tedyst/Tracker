@@ -2,7 +2,10 @@ version = 1
 
 test_patterns = ["tests/**"]
 
-exclude_patterns = ["migrations/**"]
+exclude_patterns = [
+  "migrations/**",
+  ".vscode/**"
+]
 
 [[analyzers]]
 name = "python"
