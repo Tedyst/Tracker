@@ -51,7 +51,7 @@
 
             {% if current_user.is_authenticated %}
 
-                <li {%if page == 'index' and current_user.nickname == user%} class="active" {%endif%}>
+                <li {%if page == 'index' and current_user.nickname == user.nickname%} class="active" {%endif%}>
                             <a href="{{ url_for('index') }}">
                                 <i class="material-icons">dashboard</i>
                                 <p>Profilul meu</p>
