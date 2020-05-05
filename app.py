@@ -107,15 +107,15 @@ def api_getuser(user):
         mimetype='application/json'
     )
 
+
 @app.route('/search', methods=['POST'])
 def search():
     data = request.form.to_dict()
     print(data)
     return redirect(url_for('profile_username', nickname=data['to_search']))
-    
+
 
 @app.route('/prob/<nickname>')
-@cache.cached(timeout=50)
 def prob_user(nickname):
     user = User.query.filter(User.nickname == nickname).first()
 
