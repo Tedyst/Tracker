@@ -1,11 +1,13 @@
 import importlib
 from typing import Iterable
 import time
-from Tracker import db, Problema, User, SITES, app
-from Tracker.utils import validUsername
+from Tracker import db, Problema, User, SITES, app, SITES_ALL
+from Tracker.utils import validUsername, invalidateCache
 from threading import Thread
 import queue
 from sqlalchemy.orm import raiseload
+from flask import url_for
+from Tracker.stats import ALL_STATS
 updatequeue = queue.Queue()
 
 
@@ -137,8 +139,23 @@ def needsUpdate(user: User, site):
 
 
 def updateThreaded(user: User):
+    # Generate a list of urls we need to remove from cache
+    urlUpdate = []
+    for site in SITES_ALL:
+        urlUpdate.append(
+            url_for('api_users', nickname=user.nickname, site=site)
+        )
+    for stat in ALL_STATS:
+        urlUpdate.append(
+            url_for('api_stats_user', stat=stat, nickname=user.nickname)
+        )
+    urlUpdate.append(
+        url_for('api_stats_user', stat="all", nickname=user.nickname)
+    )
+
     # Create a new thread that controls all the other threads
-    thread = Thread(target=_threadedupd, args=[user.usernames(), user.lock])
+    thread = Thread(target=_threadedupd, args=[
+                    user.nickname, user.usernames(), user.lock, urlUpdate])
     for i in SITES:
         if user[i] is not None:
             user["last_" + i] = int(time.time())
@@ -146,7 +163,7 @@ def updateThreaded(user: User):
     thread.start()
 
 
-def _threadedupd(usernames, lock):
+def _threadedupd(nickname, usernames, lock, urlUpdate):
     # If it is locked, it means that the user is updating already
     if lock.locked():
         return
@@ -180,4 +197,6 @@ def _threadedupd(usernames, lock):
         updatequeue.task_done()
     db.session.commit()
     app.logger.debug("Committed to databsase")
+    for url in urlUpdate:
+        invalidateCache(url)
     lock.release()

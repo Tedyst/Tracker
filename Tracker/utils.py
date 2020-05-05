@@ -1,5 +1,6 @@
 import importlib
 from datetime import datetime
+from Tracker import cache
 
 
 def validUsername(username, site):
@@ -12,3 +13,7 @@ def validUsername(username, site):
 def roundTime(time):
     return int(datetime.fromtimestamp(time).replace(
         hour=0, minute=0, second=0).timestamp())
+
+
+def invalidateCache(url):
+    cache.cache.delete("view/" + url)

@@ -7,7 +7,8 @@ def test_pbinfo():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
     user.pbinfo = "Tedyst"
-    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread = Thread(target=dbutils._threadedupd, args=[
+                    "Tedyst", user.usernames(), user.lock, []])
     thread.start()
     thread.join()
     surse = dbutils.getSurse(user, "pbinfo")
@@ -21,7 +22,8 @@ def test_codeforces():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
     user.codeforces = "Tedyst"
-    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread = Thread(target=dbutils._threadedupd, args=[
+                    "Tedyst", user.usernames(), user.lock, []])
     thread.start()
     thread.join()
     surse = dbutils.getSurse(user, "codeforces")
@@ -35,7 +37,8 @@ def test_infoarena():
     dbutils.createUser("Tedyst", "parola", "stoicatedy@gmail.com")
     user = dbutils.getUser("Tedyst")
     user.infoarena = "Tedyst"
-    thread = Thread(target=dbutils._threadedupd, args=[user.usernames(), user.lock])
+    thread = Thread(target=dbutils._threadedupd, args=[
+                    "Tedyst", user.usernames(), user.lock, []])
     thread.start()
     thread.join()
     surse = dbutils.getSurse(user, "infoarena")
