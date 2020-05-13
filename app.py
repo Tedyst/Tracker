@@ -114,7 +114,10 @@ def api_getuser(user):
 @app.route('/search', methods=['POST'])
 def search():
     data = request.form.to_dict()
-    app.logger.debug(data)
+    app.logger.debug("Searching %s", data)
+    # Redirect to the previous page
+    if dbutils.getUser(data['to_search']) is None:
+        return redirect(request.referrer)
     return redirect(url_for('profile_username', nickname=data['to_search']))
 
 
