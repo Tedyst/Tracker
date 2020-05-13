@@ -28,22 +28,26 @@ def index():
 @app.route('/profile/<nickname>')
 @cache.cached(timeout=50)
 def profile_username(nickname):
-    if current_user.is_authenticated:
-        user = dbutils.getUser(nickname)
-        if user is None:
-            return app.response_class(
-                response=render_template('404.html'),
-                status=404
-            )
+    user = dbutils.getUser(nickname)
+    if user is None:
+        return app.response_class(
+            response=render_template('404.html'),
+            status=404
+        )
 
-            app.logger.debug("Username %s nu exista", nickname)
+        app.logger.debug("Username %s nu exista", nickname)
+        return redirect(url_for('index'))
+    if current_user.is_authenticated:
+        if current_user.nickname == user.nickname:
             return redirect(url_for('index'))
         else:
             return render_template('index.html',
                                    SITES=SITES_ALL,
                                    user=user)
     else:
-        return redirect(url_for('login'))
+        return render_template('index.html',
+                               SITES=SITES_ALL,
+                               user=user)
 
 
 @app.route('/api/users')
