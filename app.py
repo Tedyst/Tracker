@@ -39,12 +39,9 @@ def profile_username(nickname):
             app.logger.debug("Username %s nu exista", nickname)
             return redirect(url_for('index'))
         else:
-            if current_user.nickname == user.nickname:
-                return redirect(url_for('index'))
-            else:
-                return render_template('index.html',
-                                       SITES=SITES_ALL,
-                                       user=user)
+            return render_template('index.html',
+                                   SITES=SITES_ALL,
+                                   user=user)
     else:
         return redirect(url_for('login'))
 
