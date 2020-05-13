@@ -36,12 +36,15 @@ def profile_username(nickname):
                 status=404
             )
 
+            app.logger.debug("Username %s nu exista", nickname)
             return redirect(url_for('index'))
         else:
             if current_user.nickname == user.nickname:
                 return redirect(url_for('index'))
             else:
-                return render_template('index.html', SITES=SITES_ALL, user=user)
+                return render_template('index.html',
+                                       SITES=SITES_ALL,
+                                       user=user)
     else:
         return redirect(url_for('login'))
 
@@ -111,7 +114,7 @@ def api_getuser(user):
 @app.route('/search', methods=['POST'])
 def search():
     data = request.form.to_dict()
-    print(data)
+    app.logger.debug(data)
     return redirect(url_for('profile_username', nickname=data['to_search']))
 
 
