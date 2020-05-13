@@ -26,7 +26,6 @@ def index():
 
 
 @app.route('/profile/<nickname>')
-@cache.cached(timeout=50)
 def profile_username(nickname):
     user = dbutils.getUser(nickname)
     if user is None:
